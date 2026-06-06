@@ -1,0 +1,7 @@
+# FallacyScope is a single-file static app — no build, no deps.
+# Ignore only local cruft.
+.__check.js
+.DS_Store
+Thumbs.db
+*.log
+node_modules/

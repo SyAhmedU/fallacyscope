@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>FallacyScope — Paradoxes & fallacies in research</title>
+<meta name="description" content="A curated, fully-cited field guide to the paradoxes and fallacies that bend social-science & management research — what each trap is, a real worked example, why it happens, and how to avoid it. Reference tier of the Research Suite." />
+<meta name="theme-color" content="#FBF7EF" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='url(%23g)'/><text x='50%25' y='57%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-weight='900' font-size='16' fill='white'>F</text><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23FF9656'/><stop offset='52%25' stop-color='%23F14575'/><stop offset='100%25' stop-color='%239270F4'/></linearGradient></defs></svg>" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════════
+   FALLACYSCOPE — paradoxes & fallacies in social-science & management
+   research. Single file, no build. Data in pitfalls.js — every entry
+   is a real, hand-verified citation with a DOI/link out (nothing
+   invented). Shares the Research-Suite "Throughline" design tokens.
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  --paper:#FBF7EF; --paper-2:#FFFFFF; --paper-3:#F3ECDF;
+  --ink:#211B2E; --ink-soft:#574E64; --ink-faint:#8C8498;
+  --line:rgba(33,27,46,.12); --line-soft:rgba(33,27,46,.07);
+  --coral:#FF9656; --magenta:#F14575; --violet:#9270F4;
+  --grad:linear-gradient(135deg,#FF9656 0%,#F14575 52%,#9270F4 100%);
+  --grad-soft:linear-gradient(135deg,rgba(255,150,86,.14),rgba(241,69,117,.12),rgba(146,112,244,.14));
+  --shadow:0 24px 60px -28px rgba(33,27,46,.35); --shadow-sm:0 8px 24px -14px rgba(33,27,46,.3);
+}
+html[data-theme="dark"]{
+  --paper:#14111C; --paper-2:#1C1827; --paper-3:#241F31;
+  --ink:#F4EFF8; --ink-soft:#B8AEC6; --ink-faint:#7C7389;
+  --line:rgba(255,255,255,.13); --line-soft:rgba(255,255,255,.07);
+  --grad-soft:linear-gradient(135deg,rgba(255,150,86,.16),rgba(241,69,117,.13),rgba(146,112,244,.18));
+  --shadow:0 24px 60px -24px rgba(0,0,0,.7); --shadow-sm:0 8px 24px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif; background:var(--paper); color:var(--ink);
+  line-height:1.6; overflow-x:hidden; -webkit-font-smoothing:antialiased; min-height:100vh;
+  transition:background .4s ease,color .4s ease;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html[data-theme="dark"] body::before{mix-blend-mode:screen;opacity:.05;}
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--magenta);color:#fff;}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:6px;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px;position:relative;z-index:2;}
+
+/* ── Brand bar ─────────────────────────────────────────────── */
+.bar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
+  padding:9px 22px;background:color-mix(in srgb,var(--paper) 82%,transparent);
+  backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--line);
+}
+.s-mark{width:30px;height:30px;border-radius:9px;background:var(--grad);display:grid;place-items:center;
+  color:#fff;font-weight:900;font-size:15px;box-shadow:0 4px 14px -4px rgba(241,69,117,.6);animation:glow 4s ease-in-out infinite;}
+@keyframes glow{0%,100%{box-shadow:0 4px 14px -4px rgba(241,69,117,.5);}50%{box-shadow:0 4px 22px -2px rgba(146,112,244,.7);}}
+.bar-name{font-weight:800;letter-spacing:-.01em;font-size:15px;}
+.bar-name b{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.bar-tag{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);}
+.bar-sp{flex:1;}
+.bar-link{font-size:.78rem;font-weight:600;color:var(--ink-soft);padding:6px 11px;border-radius:999px;border:1px solid var(--line);transition:.15s;}
+.bar-link:hover{color:var(--ink);border-color:var(--violet);}
+.theme-btn{width:34px;height:34px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);cursor:pointer;font-size:15px;color:var(--ink);transition:.15s;}
+.theme-btn:hover{border-color:var(--magenta);}
+
+/* ── Hero ──────────────────────────────────────────────────── */
+.hero{padding:46px 0 22px;}
+.hero .kicker{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--magenta);margin-bottom:12px;}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.025em;font-size:clamp(2rem,5vw,3.1rem);line-height:1.04;max-width:18ch;}
+.hero h1 .hl{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{margin-top:14px;color:var(--ink-soft);font-size:1.05rem;max-width:62ch;}
+
+/* ── Controls ──────────────────────────────────────────────── */
+.controls{margin:18px 0 8px;display:flex;flex-direction:column;gap:14px;}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.row.between{justify-content:space-between;}
+.seg{display:inline-flex;background:var(--paper-3);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap;}
+.seg button{border:0;background:transparent;cursor:pointer;font-family:inherit;font-weight:700;font-size:.82rem;color:var(--ink-soft);padding:7px 16px;border-radius:999px;transition:.15s;}
+.seg button.on{background:var(--paper-2);color:var(--ink);box-shadow:var(--shadow-sm);}
+.seg button:hover:not(.on){color:var(--ink);}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);}
+.chips{display:flex;gap:7px;flex-wrap:wrap;}
+.chip{border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);cursor:pointer;font-family:inherit;font-weight:600;font-size:.8rem;padding:6px 13px;border-radius:999px;transition:.15s;}
+.chip:hover{border-color:var(--violet);color:var(--ink);}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent;}
+.input{width:100%;font-family:inherit;font-size:.95rem;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:none;transition:.15s;}
+.input:focus{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(241,69,117,.12);}
+.search{flex:1 1 300px;max-width:520px;}
+
+/* ── Browse grid ───────────────────────────────────────────── */
+.count{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink-faint);margin:6px 0 2px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:13px;margin-top:8px;}
+.card{display:flex;flex-direction:column;gap:9px;text-align:left;background:var(--paper-2);border:1px solid var(--line);border-radius:16px;padding:16px 17px;cursor:pointer;transition:.16s;font-family:inherit;color:var(--ink);position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--grad);opacity:.65;}
+.card:hover{border-color:var(--violet);transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+.card-eyebrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.k-pill{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:3px 8px;border-radius:999px;}
+.k-paradox{background:rgba(146,112,244,.16);color:var(--violet);}
+.k-fallacy{background:rgba(241,69,117,.15);color:var(--magenta);}
+.fam{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
+.card-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.22rem;letter-spacing:-.02em;line-height:1.12;}
+.card-trap{font-size:.88rem;color:var(--ink-soft);line-height:1.45;}
+.stage-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px;}
+.stage-tag{font-size:.66rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--paper-3);border:1px solid var(--line);color:var(--ink-faint);}
+.empty{text-align:center;color:var(--ink-faint);padding:46px 0;font-size:.92rem;}
+
+/* ── By-stage view ─────────────────────────────────────────── */
+.stage-sec{margin-top:22px;}
+.stage-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:7px;}
+.stage-head h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;letter-spacing:-.02em;}
+.stage-head .n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink-faint);}
+.stage-head .desc{font-size:.82rem;color:var(--ink-soft);margin-left:auto;text-align:right;max-width:40ch;}
+.mini-list{display:flex;flex-direction:column;gap:7px;}
+.mini{display:flex;align-items:center;gap:11px;text-align:left;background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;transition:.15s;font-family:inherit;color:var(--ink);}
+.mini:hover{border-color:var(--violet);transform:translateX(2px);}
+.mini .mk{flex:1;min-width:0;}
+.mini .mt{font-weight:700;font-size:.95rem;letter-spacing:-.01em;}
+.mini .mtrap{font-size:.8rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── Modal ─────────────────────────────────────────────────── */
+.scrim{position:fixed;inset:0;z-index:100;background:rgba(20,14,30,.5);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+.scrim.show{display:flex;}
+.modal{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);max-width:680px;width:100%;padding:26px 28px 32px;position:relative;animation:rise .25s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.modal-x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);cursor:pointer;font-size:17px;line-height:1;z-index:2;}
+.modal-x:hover{border-color:var(--magenta);color:var(--magenta);}
+.m-eyebrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;}
+.m-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.7rem;letter-spacing:-.02em;line-height:1.1;padding-right:30px;}
+.m-trap{font-size:1.02rem;color:var(--ink);margin:10px 0 4px;line-height:1.5;font-weight:500;}
+.m-sec{margin-top:18px;}
+.m-sec h4{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+.m-sec p{font-size:.94rem;color:var(--ink-soft);line-height:1.6;}
+.m-sec.antidote{background:var(--grad-soft);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+.m-sec.antidote h4{color:var(--magenta);}
+.m-sec.antidote p{color:var(--ink);}
+.stages-full{display:flex;gap:6px;flex-wrap:wrap;}
+.m-links{display:flex;flex-wrap:wrap;gap:8px;}
+.m-link{font-size:.8rem;font-weight:600;padding:8px 13px;border-radius:999px;border:1px solid var(--line);color:var(--ink-soft);transition:.15s;display:inline-flex;align-items:center;gap:6px;}
+.m-link:hover{border-color:var(--violet);color:var(--ink);transform:translateY(-1px);}
+.related{display:flex;flex-wrap:wrap;gap:7px;}
+.rel-btn{font-size:.82rem;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);cursor:pointer;font-family:inherit;transition:.15s;}
+.rel-btn:hover{border-color:var(--magenta);color:var(--ink);}
+.refs{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.ref{font-size:.84rem;color:var(--ink-soft);line-height:1.5;padding-left:14px;border-left:2px solid var(--line);}
+.ref a{color:var(--violet);font-weight:600;border-bottom:1px solid transparent;}
+.ref a:hover{border-bottom-color:var(--violet);}
+.verify{font-size:.74rem;color:var(--ink-faint);font-style:italic;margin-top:10px;}
+
+/* ── Footer ────────────────────────────────────────────────── */
+.foot{margin:46px 0 30px;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-faint);line-height:1.6;}
+.foot a{color:var(--violet);font-weight:600;}
+.foot .big{font-family:'Fraunces',serif;font-size:1rem;color:var(--ink-soft);margin-bottom:6px;}
+
+@media(max-width:560px){
+  .hero{padding:34px 0 18px;}
+  .stage-head .desc{display:none;}
+  .modal{padding:22px 20px 28px;}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="s-mark">F</div>
+  <div>
+    <div class="bar-name">Fallacy<b>Scope</b></div>
+    <div class="bar-tag">Research Suite · reference</div>
+  </div>
+  <div class="bar-sp"></div>
+  <a class="bar-link" href="https://syahmedu.github.io/research-suite/" target="_blank" rel="noopener">← Research Suite</a>
+  <button class="theme-btn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+</div>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Paradoxes · Fallacies · Reasoning traps</div>
+    <h1>The ways research <span class="hl">reasoning goes wrong</span>.</h1>
+    <p>A curated field guide to the paradoxes and fallacies that bend social-science &amp; management research. Each entry: what the trap is, a real worked example, why it happens, and how to avoid it — every one hand-cited to a canonical source you can verify.</p>
+  </section>
+
+  <section class="controls">
+    <div class="row between">
+      <div class="seg" id="modeSeg">
+        <button data-mode="browse" class="on">🗂 Browse</button>
+        <button data-mode="stage">🧭 By research stage</button>
+      </div>
+      <input class="input search" id="search" type="search" placeholder="Search traps, examples, mechanisms…" autocomplete="off" />
+    </div>
+
+    <div id="filters">
+      <div class="row">
+        <span class="lbl">Type</span>
+        <div class="chips" id="kindChips"></div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <span class="lbl">Family</span>
+        <div class="chips" id="famChips"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="count" id="count"></div>
+  <div id="view"></div>
+
+  <div class="foot">
+    <div class="big">FallacyScope — reference tier of the Research Suite.</div>
+    Every paradox &amp; fallacy here names a real, hand-verified canonical source with a link out — nothing is invented. Worked examples are drawn from the cited literature.
+    Part of <a href="https://syahmedu.github.io/research-suite/" target="_blank" rel="noopener">Throughline</a>, alongside
+    <a href="https://theoryscope.vercel.app/" target="_blank" rel="noopener">TheoryScope</a> ·
+    <a href="https://scalescope.vercel.app/" target="_blank" rel="noopener">ScaleScope</a> ·
+    <a href="https://toolsscope.vercel.app/" target="_blank" rel="noopener">ToolsScope</a> ·
+    <a href="https://syahmedu.github.io/scholarscope/" target="_blank" rel="noopener">ScholarScope</a>.
+  </div>
+</main>
+
+<!-- Detail modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script src="pitfalls.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════════
+   FALLACYSCOPE app. Data: window.PITFALLS (pitfalls.js).
+   ════════════════════════════════════════════════════════════════ */
+const DATA = window.PITFALLS || [];
+
+const STAGE_LABELS = {
+  design:        { label:'Design',        icon:'✏️', desc:'How the study is set up before any data exists.' },
+  sampling:      { label:'Sampling',      icon:'🎯', desc:'Who or what gets into the sample — and who is missing.' },
+  measurement:   { label:'Measurement',   icon:'📏', desc:'What the numbers actually capture.' },
+  analysis:      { label:'Analysis',      icon:'📊', desc:'Running and modelling the data.' },
+  inference:     { label:'Inference',     icon:'🔗', desc:'What the results are taken to imply.' },
+  interpretation:{ label:'Interpretation',icon:'💬', desc:'The story told about the findings.' }
+};
+const STAGE_ORDER = ['design','sampling','measurement','analysis','inference','interpretation'];
+
+const FAMILY_LABELS = {
+  statistical:'Statistical', causal:'Causal', selection:'Selection / sampling',
+  measurement:'Measurement', levels:'Levels of analysis', reasoning:'Reasoning',
+  decision:'Decision', integrity:'Research integrity'
+};
+
+const SUITE = {
+  toolsscope:  { base:'https://toolsscope.vercel.app/',  param:'plan' },
+  theoryscope: { base:'https://theoryscope.vercel.app/', param:'q'    },
+  researchflow:{ base:'https://researchflow.vercel.app/',param:'idea' }
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const byId = id => DATA.find(p => p.id === id);
+const suiteUrl = l => { const c = SUITE[l.tool]; if(!c) return '#'; return c.base + '?' + c.param + '=' + encodeURIComponent(l.arg||''); };
+
+const state = { mode:'browse', kind:'all', family:'all', q:'' };
+
+/* ── Theme (shared with the suite via localStorage 'syed-theme') ── */
+const themeBtn = $('#themeBtn');
+function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); try{localStorage.setItem('syed-theme',t);}catch(e){} }
+applyTheme((()=>{ try{return localStorage.getItem('syed-theme')||'light';}catch(e){return 'light';} })());
+themeBtn.onclick = ()=> applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+
+/* ── Build filter chips ── */
+function buildChips(){
+  const kinds = [['all','All'],['paradox','Paradoxes'],['fallacy','Fallacies']];
+  $('#kindChips').innerHTML = kinds.map(([v,t])=>
+    `<button class="chip${state.kind===v?' on':''}" data-kind="${v}">${t}</button>`).join('');
+  const fams = ['all', ...Array.from(new Set(DATA.map(p=>p.family)))];
+  $('#famChips').innerHTML = fams.map(v=>
+    `<button class="chip${state.family===v?' on':''}" data-fam="${v}">${v==='all'?'All':esc(FAMILY_LABELS[v]||v)}</button>`).join('');
+}
+$('#kindChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b)return; state.kind=b.dataset.kind; buildChips(); render(); });
+$('#famChips').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b)return; state.family=b.dataset.fam; buildChips(); render(); });
+
+/* ── Mode + search ── */
+$('#modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b)return;
+  state.mode=b.dataset.mode;
+  $('#modeSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  render();
+});
+$('#search').addEventListener('input', e=>{ state.q=e.target.value.trim().toLowerCase(); render(); });
+
+/* ── Filtering ── */
+function filtered(){
+  return DATA.filter(p=>{
+    if(state.kind!=='all' && p.kind!==state.kind) return false;
+    if(state.family!=='all' && p.family!==state.family) return false;
+    if(state.q){
+      const hay = (p.name+' '+p.trap+' '+p.example+' '+p.why+' '+p.antidote+' '+(FAMILY_LABELS[p.family]||p.family)).toLowerCase();
+      if(!hay.includes(state.q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ── Card markup ── */
+function cardHTML(p){
+  const stages = p.stages.map(s=>`<span class="stage-tag">${STAGE_LABELS[s]?.icon||''} ${esc(STAGE_LABELS[s]?.label||s)}</span>`).join('');
+  return `<button class="card" data-open="${p.id}">
+    <div class="card-eyebrow">
+      <span class="k-pill k-${p.kind}">${p.kind}</span>
+      <span class="fam">${esc(FAMILY_LABELS[p.family]||p.family)}</span>
+    </div>
+    <div class="card-title">${esc(p.name)}</div>
+    <div class="card-trap">${esc(p.trap)}</div>
+    <div class="stage-row">${stages}</div>
+  </button>`;
+}
+
+/* ── Render ── */
+function render(){
+  const list = filtered();
+  const view = $('#view'), count = $('#count');
+  $('#filters').style.display = state.mode==='browse' ? '' : '';
+
+  if(state.mode==='browse'){
+    count.textContent = `${list.length} of ${DATA.length} ${list.length===1?'entry':'entries'}`;
+    view.innerHTML = list.length
+      ? `<div class="grid">${list.map(cardHTML).join('')}</div>`
+      : `<div class="empty">No traps match these filters. <button class="rel-btn" onclick="resetFilters()">Clear filters</button></div>`;
+  } else {
+    // By research stage — a trap appears under every stage it bites.
+    count.textContent = `${list.length} ${list.length===1?'entry':'entries'} across the research lifecycle`;
+    let html = '';
+    for(const s of STAGE_ORDER){
+      const inStage = list.filter(p=>p.stages.includes(s));
+      if(!inStage.length) continue;
+      const meta = STAGE_LABELS[s];
+      html += `<section class="stage-sec">
+        <div class="stage-head">
+          <h3>${meta.icon} ${esc(meta.label)}</h3>
+          <span class="n">${inStage.length}</span>
+          <span class="desc">${esc(meta.desc)}</span>
+        </div>
+        <div class="mini-list">${inStage.map(p=>`
+          <button class="mini" data-open="${p.id}">
+            <span class="k-pill k-${p.kind}">${p.kind}</span>
+            <span class="mk"><span class="mt">${esc(p.name)}</span><div class="mtrap">${esc(p.trap)}</div></span>
+          </button>`).join('')}</div>
+      </section>`;
+    }
+    view.innerHTML = html || `<div class="empty">No traps match these filters. <button class="rel-btn" onclick="resetFilters()">Clear filters</button></div>`;
+  }
+}
+function resetFilters(){ state.kind='all'; state.family='all'; state.q=''; $('#search').value=''; buildChips(); render(); }
+
+/* ── Open / close modal ── */
+document.body.addEventListener('click', e=>{
+  const opener = e.target.closest('[data-open]');
+  if(opener){ openPitfall(opener.dataset.open); }
+});
+function openPitfall(id){
+  const p = byId(id); if(!p) return;
+  const stages = p.stages.map(s=>`<span class="stage-tag">${STAGE_LABELS[s]?.icon||''} ${esc(STAGE_LABELS[s]?.label||s)}</span>`).join('');
+  const links = (p.links&&p.links.length)
+    ? `<div class="m-sec"><h4>Connect it in the suite</h4><div class="m-links">${p.links.map(l=>
+        `<a class="m-link" href="${esc(suiteUrl(l))}" target="_blank" rel="noopener">↗ ${esc(l.label)}</a>`).join('')}</div></div>` : '';
+  const related = (p.also&&p.also.length)
+    ? `<div class="m-sec"><h4>Related traps</h4><div class="related">${p.also.map(rid=>{
+        const r=byId(rid); return r?`<button class="rel-btn" data-open="${r.id}">${esc(r.name)} →</button>`:'';}).join('')}</div></div>` : '';
+  const refs = `<div class="m-sec"><h4>Sources — verify each</h4><ul class="refs">${p.refs.map(r=>
+      `<li class="ref">${esc(r.cite)}${r.doi?` <a href="https://doi.org/${esc(r.doi)}" target="_blank" rel="noopener">doi.org/${esc(r.doi)}</a>`:''}</li>`).join('')}</ul>
+      <div class="verify">Bibliographic facts are real and hand-checked; follow the link to confirm before citing.</div></div>`;
+
+  $('#modal').innerHTML = `
+    <button class="modal-x" id="modalX" aria-label="Close">✕</button>
+    <div class="m-eyebrow">
+      <span class="k-pill k-${p.kind}">${p.kind}</span>
+      <span class="fam">${esc(FAMILY_LABELS[p.family]||p.family)}</span>
+    </div>
+    <div class="m-title">${esc(p.name)}</div>
+    <div class="m-trap">${esc(p.trap)}</div>
+    <div class="m-sec"><h4>📎 Worked example</h4><p>${esc(p.example)}</p></div>
+    <div class="m-sec"><h4>🧠 Why it happens</h4><p>${esc(p.why)}</p></div>
+    <div class="m-sec antidote"><h4>🛡 How to detect &amp; avoid</h4><p>${esc(p.antidote)}</p></div>
+    <div class="m-sec"><h4>🧭 Where it bites</h4><div class="stages-full">${stages}</div></div>
+    ${links}
+    ${related}
+    ${refs}`;
+  $('#modalX').onclick = closeModal;
+  $('#scrim').classList.add('show');
+  document.body.style.overflow='hidden';
+  if(location.hash !== '#/'+p.id) history.replaceState(null,'','#/'+p.id);
+  $('#modal').scrollTop = 0;
+}
+function closeModal(){
+  $('#scrim').classList.remove('show');
+  document.body.style.overflow='';
+  if(location.hash.startsWith('#/')) history.replaceState(null,'','#');
+}
+$('#scrim').addEventListener('click', e=>{ if(e.target===$('#scrim')) closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#scrim').classList.contains('show')) closeModal(); });
+
+/* ── Deep link: #/<id> opens that trap on load ── */
+function openFromHash(){
+  const m = location.hash.match(/^#\/(.+)$/);
+  if(m && byId(m[1])) openPitfall(m[1]);
+}
+
+/* ── Boot ── */
+buildChips();
+render();
+openFromHash();
+</script>
+</body>
+</html>
