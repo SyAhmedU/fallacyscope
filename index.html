@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>FallacyScope — Paradoxes & fallacies in research</title>
-<meta name="description" content="A curated, fully-cited field guide to the paradoxes and fallacies that bend social-science & management research — what each trap is, a real worked example, why it happens, and how to avoid it. Reference tier of the Research Suite." />
+<meta name="description" content="A curated, fully-cited field guide to the paradoxes, fallacies and biases that bend social-science & management research — what each trap is, a real worked example, why it happens, and how to avoid it. Reference tier of the Research Suite." />
 <meta name="theme-color" content="#FBF7EF" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='url(%23g)'/><text x='50%25' y='57%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-weight='900' font-size='16' fill='white'>F</text><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%25' stop-color='%23FF9656'/><stop offset='52%25' stop-color='%23F14575'/><stop offset='100%25' stop-color='%239270F4'/></linearGradient></defs></svg>" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +103,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .k-pill{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:3px 8px;border-radius:999px;}
 .k-paradox{background:rgba(146,112,244,.16);color:var(--violet);}
 .k-fallacy{background:rgba(241,69,117,.15);color:var(--magenta);}
+.k-bias{background:rgba(255,150,86,.18);color:#C9722F;}
+html[data-theme="dark"] .k-bias{color:#FFB082;}
 .fam{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
 .card-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.22rem;letter-spacing:-.02em;line-height:1.12;}
 .card-trap{font-size:.88rem;color:var(--ink-soft);line-height:1.45;}
@@ -179,9 +181,9 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 
 <main class="wrap">
   <section class="hero">
-    <div class="kicker">Paradoxes · Fallacies · Reasoning traps</div>
+    <div class="kicker">Paradoxes · Fallacies · Biases</div>
     <h1>The ways research <span class="hl">reasoning goes wrong</span>.</h1>
-    <p>A curated field guide to the paradoxes and fallacies that bend social-science &amp; management research. Each entry: what the trap is, a real worked example, why it happens, and how to avoid it — every one hand-cited to a canonical source you can verify.</p>
+    <p>A curated field guide to the paradoxes, fallacies and biases that bend social-science &amp; management research. Each entry: what the trap is, a real worked example, why it happens, and how to avoid it — every one hand-cited to a canonical source you can verify.</p>
   </section>
 
   <section class="controls">
@@ -210,7 +212,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 
   <div class="foot">
     <div class="big">FallacyScope — reference tier of the Research Suite.</div>
-    Every paradox &amp; fallacy here names a real, hand-verified canonical source with a link out — nothing is invented. Worked examples are drawn from the cited literature.
+    Every paradox, fallacy &amp; bias here names a real, hand-verified canonical source with a link out — nothing is invented. Worked examples are drawn from the cited literature.
     Part of <a href="https://syahmedu.github.io/research-suite/" target="_blank" rel="noopener">Throughline</a>, alongside
     <a href="https://theoryscope.vercel.app/" target="_blank" rel="noopener">TheoryScope</a> ·
     <a href="https://scalescope.vercel.app/" target="_blank" rel="noopener">ScaleScope</a> ·
@@ -244,7 +246,7 @@ const STAGE_ORDER = ['design','sampling','measurement','analysis','inference','i
 const FAMILY_LABELS = {
   statistical:'Statistical', causal:'Causal', selection:'Selection / sampling',
   measurement:'Measurement', levels:'Levels of analysis', reasoning:'Reasoning',
-  decision:'Decision', integrity:'Research integrity'
+  decision:'Decision', design:'Study design', integrity:'Research integrity'
 };
 
 const SUITE = {
@@ -268,7 +270,7 @@ themeBtn.onclick = ()=> applyTheme(document.documentElement.getAttribute('data-t
 
 /* ── Build filter chips ── */
 function buildChips(){
-  const kinds = [['all','All'],['paradox','Paradoxes'],['fallacy','Fallacies']];
+  const kinds = [['all','All'],['paradox','Paradoxes'],['fallacy','Fallacies'],['bias','Biases']];
   $('#kindChips').innerHTML = kinds.map(([v,t])=>
     `<button class="chip${state.kind===v?' on':''}" data-kind="${v}">${t}</button>`).join('');
   const fams = ['all', ...Array.from(new Set(DATA.map(p=>p.family)))];

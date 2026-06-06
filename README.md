@@ -1,6 +1,6 @@
 # FallacyScope
 
-A curated, fully-cited field guide to the **paradoxes and fallacies** that bend
+A curated, fully-cited field guide to the **paradoxes, fallacies and biases** that bend
 **social-science & management** research — part of the Research Suite (reference tier,
 sibling to TheoryScope / ScaleScope / ScholarScope).
 
@@ -9,8 +9,9 @@ every entry names a real, hand-verified canonical source with a DOI/link out, an
 worked example is drawn from the cited literature (suite-wide no-fabrication rule).
 
 ## What's in it
-Each entry — a **paradox** (counter-intuitive but real) or a **fallacy** (an error of
-inference) — carries:
+Each entry — a **paradox** (counter-intuitive but real), a **fallacy** (an error of
+inference), or a **bias** (a systematic distortion in data, measurement or judgement) —
+carries:
 - the **trap** in one plain line,
 - a **worked example** from the cited literature,
 - **why it happens** (the mechanism),
@@ -19,8 +20,8 @@ inference) — carries:
 - **canonical sources** with `doi.org` links to verify.
 
 ## Two ways in
-- **🗂 Browse** — filter by type (paradox / fallacy) and family (statistical, causal,
-  selection, levels, reasoning, decision, measurement, integrity), or search.
+- **🗂 Browse** — filter by type (paradox / fallacy / bias) and family (statistical, causal,
+  selection, levels, reasoning, decision, measurement, study-design, integrity), or search.
 - **🧭 By research stage** — see which traps bite at *design · sampling · measurement ·
   analysis · inference · interpretation*, so you can scan the ones relevant to where you are.
 
@@ -29,11 +30,14 @@ connect out to the rest of the suite (e.g. "check subgroups in ToolsScope",
 "multilevel theory in TheoryScope", "pre-register the plan in ResearchFlow") via the
 suite's `?param=` handoff contracts.
 
-## Starter set (12 entries — all hand-cited)
-Simpson's Paradox · Lord's Paradox · Berkson's Paradox · Easterlin Paradox ·
-Ecological Fallacy · Atomistic Fallacy · Base-Rate Fallacy · Gambler's Fallacy ·
-Regression to the Mean · Survivorship Bias · Sunk-Cost Fallacy ·
-Texas Sharpshooter Fallacy (& HARKing).
+## Library (37 entries — all hand-cited)
+**Paradoxes:** Simpson's · Lord's · Berkson's · Easterlin · Will Rogers (stage migration) · Friendship.
+**Fallacies:** Ecological · Atomistic · Correlation ≠ Causation · Spurious Correlation · Base-Rate ·
+Prosecutor's · Gambler's · Hot-Hand · Regression to the Mean · Sunk-Cost · Narrative ·
+Texas Sharpshooter (& HARKing) · P-Hacking · Jingle-Jangle · Law of the Instrument · Streetlight.
+**Biases:** Confounding · Survivorship · Framing · Anchoring · Availability · Confirmation ·
+Hindsight · Publication · Goodhart's Law · Campbell's Law · Common-Method · Range Restriction ·
+Hawthorne · Demand Characteristics · Experimenter Expectancy.
 
 **To add an entry:** append one object to `PITFALLS` in `pitfalls.js` (schema documented
 at the top of that file). Keep the curation principle tight — *include it only if a
