@@ -112,6 +112,28 @@ html[data-theme="dark"] .k-bias{color:#FFB082;}
 .stage-tag{font-size:.66rem;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--paper-3);border:1px solid var(--line);color:var(--ink-faint);}
 .empty{text-align:center;color:var(--ink-faint);padding:46px 0;font-size:.92rem;}
 
+/* ── Quiz ──────────────────────────────────────────────────── */
+.quiz{max-width:680px;margin:8px auto 0;}
+.quiz-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.quiz-prompt{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--magenta);font-weight:600;}
+.quiz-score{font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--ink-soft);}
+.quiz-trap{font-family:'Fraunces',serif;font-size:1.4rem;line-height:1.3;letter-spacing:-.01em;color:var(--ink);background:var(--grad-soft);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:16px;}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:560px){.quiz-opts{grid-template-columns:1fr;}}
+.quiz-opt{text-align:left;font-family:inherit;font-weight:600;font-size:.92rem;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:13px 16px;cursor:pointer;transition:.15s;}
+.quiz-opt:hover:not(:disabled){border-color:var(--violet);transform:translateY(-1px);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-opt.correct{background:rgba(27,138,90,.14);border-color:#1b8a5a;color:#1b8a5a;}
+.quiz-opt.wrong{background:rgba(241,69,117,.12);border-color:var(--magenta);color:var(--magenta);}
+.quiz-fb{font-weight:700;font-size:1.02rem;margin:18px 0 10px;}
+.quiz-fb.ok{color:#1b8a5a;} .quiz-fb.no{color:var(--magenta);}
+.quiz-fb strong{font-family:'Fraunces',serif;}
+.quiz-rev{font-size:.9rem;color:var(--ink-soft);line-height:1.55;margin:8px 0;padding-left:12px;border-left:2px solid var(--line);}
+.quiz-rl{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-right:7px;}
+.quiz-actions{display:flex;gap:8px;margin-top:16px;}
+.quiz-next{font-family:inherit;font-weight:700;font-size:.86rem;color:#fff;background:var(--grad);border:0;border-radius:999px;padding:9px 20px;cursor:pointer;}
+.quiz-next:hover{opacity:.92;}
+
 /* ── By-stage view ─────────────────────────────────────────── */
 .stage-sec{margin-top:22px;}
 .stage-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;border-bottom:1px solid var(--line);padding-bottom:7px;}
@@ -191,6 +213,7 @@ html[data-theme="dark"] .k-bias{color:#FFB082;}
       <div class="seg" id="modeSeg">
         <button data-mode="browse" class="on">🗂 Browse</button>
         <button data-mode="stage">🧭 By research stage</button>
+        <button data-mode="quiz">🎯 Quiz</button>
       </div>
       <input class="input search" id="search" type="search" placeholder="Search traps, examples, mechanisms…" autocomplete="off" />
     </div>
@@ -317,6 +340,11 @@ function cardHTML(p){
 
 /* ── Render ── */
 function render(){
+  const quiz = state.mode==='quiz';
+  $('#filters').style.display = quiz ? 'none' : '';
+  $('#search').style.display = quiz ? 'none' : '';
+  if(quiz){ $('#count').textContent=''; quizNew(); return; }
+
   const list = filtered();
   const view = $('#view'), count = $('#count');
   $('#filters').style.display = state.mode==='browse' ? '' : '';
@@ -351,6 +379,54 @@ function render(){
   }
 }
 function resetFilters(){ state.kind='all'; state.family='all'; state.q=''; $('#search').value=''; buildChips(); render(); }
+
+/* ── Quiz mode — "spot the trap" from the real entries ── */
+const QUIZ = { correct:0, total:0, current:null, answered:false };
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function quizNew(){
+  QUIZ.answered=false;
+  const answer = DATA[Math.floor(Math.random()*DATA.length)];
+  const same = DATA.filter(p=>p.kind===answer.kind && p.id!==answer.id);
+  const pool = shuffle(same.length>=3 ? same : DATA.filter(p=>p.id!==answer.id));
+  const opts = shuffle([answer, ...pool.slice(0,3)]);
+  QUIZ.current = answer.id;
+  $('#view').innerHTML = `
+    <div class="quiz">
+      <div class="quiz-head">
+        <span class="quiz-prompt">Identify the trap</span>
+        <span class="quiz-score">Score ${QUIZ.correct}/${QUIZ.total}</span>
+      </div>
+      <div class="quiz-trap">“${esc(answer.trap)}”</div>
+      <div class="quiz-opts">
+        ${opts.map(o=>`<button class="quiz-opt" onclick="quizAnswer('${o.id}')">${esc(o.name)}</button>`).join('')}
+      </div>
+      <div id="quiz-feedback"></div>
+    </div>`;
+}
+function quizAnswer(id){
+  if(QUIZ.answered) return;
+  QUIZ.answered=true; QUIZ.total++;
+  const correct = id===QUIZ.current;
+  if(correct) QUIZ.correct++;
+  const ans = byId(QUIZ.current);
+  document.querySelectorAll('.quiz-opt').forEach(b=>{
+    b.disabled=true;
+    const m = b.getAttribute('onclick').match(/'([^']+)'/);
+    const bid = m && m[1];
+    if(bid===QUIZ.current) b.classList.add('correct');
+    else if(bid===id) b.classList.add('wrong');
+  });
+  $('#quiz-feedback').innerHTML = `
+    <div class="quiz-fb ${correct?'ok':'no'}">${correct?'✓ Correct':'✗ Not quite'} — <strong>${esc(ans.name)}</strong></div>
+    <div class="quiz-rev"><span class="quiz-rl">Example</span> ${esc(ans.example)}</div>
+    <div class="quiz-rev"><span class="quiz-rl">Why</span> ${esc(ans.why)}</div>
+    <div class="quiz-rev"><span class="quiz-rl">Avoid</span> ${esc(ans.antidote)}</div>
+    <div class="quiz-actions">
+      <button class="quiz-next" onclick="quizNext()">Next →</button>
+      <button class="rel-btn" data-open="${ans.id}">Full entry</button>
+    </div>`;
+}
+function quizNext(){ quizNew(); }
 
 /* ── Open / close modal ── */
 document.body.addEventListener('click', e=>{
