@@ -679,6 +679,182 @@ const PITFALLS = [
     refs: [
       { cite: "Kaplan, A. (1964). The Conduct of Inquiry: Methodology for Behavioral Science. Chandler. (The 'drunkard's search' / law of the instrument.)" }
     ]
+  },
+  {
+    id: 'dunning-kruger',
+    name: 'Dunning–Kruger Effect',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "The least competent tend to most overrate their competence, because the skill needed to do well is the same skill needed to see you are doing badly.",
+    example: "Kruger and Dunning (1999) tested people on humour, logic and grammar. Bottom-quartile performers scored around the 12th percentile but rated their own ability near the 62nd — and could not recognise better answers even when shown them.",
+    why: "Metacognitive self-monitoring depends on domain skill: the deficit that produces wrong answers also conceals their wrongness, so self-assessment error is largest exactly where competence is lowest.",
+    antidote: "Never treat self-rated expertise as a measure of competence — anchor it to objective performance, calibration checks, or blind external review. Confident self-report from low scorers is uninformative, not reassuring.",
+    stages: ['measurement', 'interpretation'],
+    links: [{ tool: 'scalescope', label: 'Pair self-report with an objective measure', arg: 'self-assessment competence' }],
+    also: ['confirmation-bias', 'common-method-bias'],
+    refs: [
+      { cite: "Kruger, J., & Dunning, D. (1999). Unskilled and unaware of it: How difficulties in recognizing one's own incompetence lead to inflated self-assessments. Journal of Personality and Social Psychology, 77(6), 1121–1134.", doi: "10.1037/0022-3514.77.6.1121" }
+    ]
+  },
+  {
+    id: 'conjunction-fallacy',
+    name: 'Conjunction Fallacy',
+    kind: 'fallacy',
+    family: 'reasoning',
+    trap: "Judging a specific combination of events as more probable than one of its own components — which is mathematically impossible.",
+    example: "In Tversky and Kahneman's (1983) 'Linda' problem, a woman is described as a philosophy graduate concerned with discrimination. Most respondents rated 'Linda is a bank teller and active in the feminist movement' as more probable than 'Linda is a bank teller' — but a conjunction can never be more likely than its conjunct.",
+    why: "The representativeness heuristic substitutes similarity for probability: the richer, stereotype-fitting description feels more typical, so people rank it higher despite the logic.",
+    antidote: "When a vivid, detailed scenario seems likely, strip it to its base claim and compare. Specificity raises plausibility but can only lower probability — added conditions narrow, never widen.",
+    stages: ['analysis', 'inference', 'interpretation'],
+    links: [],
+    also: ['base-rate-fallacy', 'availability-heuristic', 'narrative-fallacy'],
+    refs: [
+      { cite: "Tversky, A., & Kahneman, D. (1983). Extensional versus intuitive reasoning: The conjunction fallacy in probability judgment. Psychological Review, 90(4), 293–315.", doi: "10.1037/0033-295X.90.4.293" }
+    ]
+  },
+  {
+    id: 'planning-fallacy',
+    name: 'Planning Fallacy',
+    kind: 'bias',
+    family: 'decision',
+    trap: "Predicting that a task will go faster and smoother than it ever has, even when you know your past estimates were optimistic.",
+    example: "Buehler, Griffin and Ross (1994) had students predict when they would finish theses and assignments. Most finished far later than their own forecasts — and even their explicit 'worst-case' estimates were, on average, optimistic.",
+    why: "People build estimates from an inside view — an idealised step-by-step plan for this case — while ignoring the outside view (the distribution of how similar projects actually went).",
+    antidote: "Take the outside view: estimate from the realised durations of comparable past projects (reference-class forecasting), not from a best-case narrative. Pad timelines and milestones for the unknowns history guarantees.",
+    stages: ['design'],
+    links: [{ tool: 'researchflow', label: 'Reality-check the project timeline', arg: 'realistic timeline and feasibility for this study' }],
+    also: ['sunk-cost-fallacy'],
+    refs: [
+      { cite: "Buehler, R., Griffin, D., & Ross, M. (1994). Exploring the 'planning fallacy': Why people underestimate their task completion times. Journal of Personality and Social Psychology, 67(3), 366–381.", doi: "10.1037/0022-3514.67.3.366" }
+    ]
+  },
+  {
+    id: 'endowment-effect',
+    name: 'Endowment Effect',
+    kind: 'bias',
+    family: 'decision',
+    trap: "People demand far more to give up a thing than they would have paid to acquire it — mere ownership inflates value.",
+    example: "Kahneman, Knetsch and Thaler (1990) randomly gave half the participants a university mug. Median sellers wanted about $5.25 to part with it; median buyers would pay only about $2.25 — roughly a 2:1 gap for an item assigned by chance moments earlier.",
+    why: "Loss aversion applied to possessions: giving up the mug is coded as a loss, which looms larger than the equivalent gain of acquiring it, so willingness-to-accept exceeds willingness-to-pay.",
+    antidote: "In valuation or willingness-to-pay studies, watch for ownership/framing effects; randomise endowment and compare WTA vs WTP. Don't read inflated 'accept' prices as true preference.",
+    stages: ['design', 'measurement', 'interpretation'],
+    links: [],
+    also: ['loss-aversion', 'status-quo-bias', 'framing-effect'],
+    refs: [
+      { cite: "Kahneman, D., Knetsch, J. L., & Thaler, R. H. (1990). Experimental tests of the endowment effect and the Coase theorem. Journal of Political Economy, 98(6), 1325–1348.", doi: "10.1086/261737" }
+    ]
+  },
+  {
+    id: 'status-quo-bias',
+    name: 'Status-Quo Bias',
+    kind: 'bias',
+    family: 'decision',
+    trap: "A disproportionate preference for the current state of affairs — the default option wins simply because it is the default.",
+    example: "Samuelson and Zeckhauser (1988) gave people hypothetical choices (e.g., an inherited investment portfolio). Labelling one option as the existing state sharply raised how often it was chosen, and the pull to keep doing nothing grew as the number of alternatives increased.",
+    why: "Loss aversion plus the anticipated regret of an active change make deviating from the default feel riskier than staying, even when options are otherwise equivalent.",
+    antidote: "In survey or choice design, rotate which option is the default and check for order/anchor effects; never infer genuine preference from take-up of a default. In your own decisions, ask whether you'd choose the status quo if it weren't already in place.",
+    stages: ['design', 'measurement', 'interpretation'],
+    links: [],
+    also: ['endowment-effect', 'loss-aversion', 'anchoring'],
+    refs: [
+      { cite: "Samuelson, W., & Zeckhauser, R. (1988). Status quo bias in decision making. Journal of Risk and Uncertainty, 1(1), 7–59.", doi: "10.1007/BF00055564" }
+    ]
+  },
+  {
+    id: 'loss-aversion',
+    name: 'Loss Aversion',
+    kind: 'bias',
+    family: 'decision',
+    trap: "Losses hurt about twice as much as equivalent gains please, so framing the same outcome as a loss or a gain flips choices.",
+    example: "In Kahneman and Tversky's (1979) prospect theory, the value function is steeper for losses than gains: most people reject a 50/50 bet to win or lose the same amount, and choices reverse depending on whether outcomes are framed relative to a gain or a loss reference point.",
+    why: "Outcomes are evaluated as changes from a reference point, not absolute states, and the loss limb of the value function is steeper — so identical prospects are valued differently by frame.",
+    antidote: "Pre-register the reference frame; present gains and losses symmetrically and test both framings. Treat a result that depends on framing as evidence about the frame, not the underlying preference.",
+    stages: ['design', 'measurement', 'interpretation'],
+    links: [],
+    also: ['framing-effect', 'endowment-effect', 'status-quo-bias'],
+    refs: [
+      { cite: "Kahneman, D., & Tversky, A. (1979). Prospect theory: An analysis of decision under risk. Econometrica, 47(2), 263–291.", doi: "10.2307/1914185" }
+    ]
+  },
+  {
+    id: 'fundamental-attribution-error',
+    name: 'Fundamental Attribution Error',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Over-attributing others' behaviour to their character and under-weighting the situation that shaped it.",
+    example: "Ross (1977), who named the error, drew on quiz-game studies where questioners and contestants were assigned at random: observers still rated the questioners as more knowledgeable, ignoring that writing the questions was a built-in situational advantage.",
+    why: "The actor's behaviour is salient while the situational constraints are not, so dispositional explanations come to mind first and the context is discounted.",
+    antidote: "Before coding behaviour as a trait, specify the situation and incentives that produced it; in interview/observational research, separate disposition from role and context, and beware trait inferences from constrained settings.",
+    stages: ['measurement', 'analysis', 'interpretation'],
+    links: [],
+    also: ['correlation-not-causation', 'narrative-fallacy'],
+    refs: [
+      { cite: "Ross, L. (1977). The intuitive psychologist and his shortcomings: Distortions in the attribution process. Advances in Experimental Social Psychology, 10, 173–220.", doi: "10.1016/S0065-2601(08)60357-3" }
+    ]
+  },
+  {
+    id: 'immortal-time-bias',
+    name: 'Immortal Time Bias',
+    kind: 'bias',
+    family: 'selection',
+    trap: "A span of follow-up during which the outcome cannot occur is misattributed to a treatment, manufacturing a survival advantage.",
+    example: "Suissa (2008) showed that when 'treated' status requires surviving long enough to receive the treatment, that guaranteed event-free 'immortal time' gets credited to the drug — the same artefact behind the folk claim that Oscar winners live longer than nominees.",
+    why: "Misclassified or excluded person-time that is event-free by construction is assigned to the exposed group, biasing the rate comparison in its favour.",
+    antidote: "Use a time-varying definition of exposure and start follow-up at the same landmark for both groups; map every participant's person-time to its true exposure status before comparing rates.",
+    stages: ['design', 'analysis', 'inference'],
+    links: [{ tool: 'researchflow', label: 'Pin down exposure timing in the design', arg: 'cohort study where exposure is defined by a later event' }],
+    also: ['survivorship-bias', 'berksons-paradox'],
+    refs: [
+      { cite: "Suissa, S. (2008). Immortal time bias in pharmacoepidemiology. American Journal of Epidemiology, 167(4), 492–499.", doi: "10.1093/aje/kwm324" }
+    ]
+  },
+  {
+    id: 'lbw-paradox',
+    name: 'Low-Birth-Weight Paradox',
+    kind: 'paradox',
+    family: 'selection',
+    trap: "Among low-birth-weight babies, those of smokers appear to have LOWER mortality than those of non-smokers — reversing the real harm of smoking.",
+    example: "Wilcox (2001) explained the classic finding: conditioning on low birth weight is conditioning on a collider, so a more benign cause (non-smoking with some other pathology) is pooled with the smoking effect, making smoking look protective within the low-weight stratum.",
+    why: "Birth weight lies on the causal path and is also influenced by other, more dangerous causes; stratifying on it opens a spurious path that flips the association inside the stratum.",
+    antidote: "Don't condition on a variable that is itself an effect of the exposure (a mediator/collider). Reason from the causal DAG, not from convenient strata.",
+    stages: ['analysis', 'inference', 'interpretation'],
+    links: [{ tool: 'toolsscope', label: 'Avoid stratifying on a collider', arg: 'subgroup analysis conditioned on an intermediate variable' }],
+    also: ['berksons-paradox', 'simpsons-paradox', 'survivorship-bias'],
+    refs: [
+      { cite: "Wilcox, A. J. (2001). On the importance—and the unimportance—of birthweight. International Journal of Epidemiology, 30(6), 1233–1241.", doi: "10.1093/ije/30.6.1233" }
+    ]
+  },
+  {
+    id: 'prevention-paradox',
+    name: 'Prevention Paradox',
+    kind: 'paradox',
+    family: 'levels',
+    trap: "A measure that brings large benefit to a whole population offers little to each participating individual — and vice versa.",
+    example: "Rose (1981) observed that most cases of disease arise from the large number of people at modest risk, not the few at high risk. A population-wide shift (e.g., lowering everyone's blood pressure slightly) prevents more cases overall than treating high-risk individuals, yet each person gains almost nothing they can feel.",
+    why: "Risk is a population property; aggregate benefit comes from small effects spread across many people, so the population optimum and the individual incentive diverge.",
+    antidote: "Match the level of the claim to the level of the evidence: don't sell a population strategy on individual benefit, or judge a population intervention by individual effect sizes.",
+    stages: ['sampling', 'inference', 'interpretation'],
+    links: [],
+    also: ['ecological-fallacy', 'atomistic-fallacy'],
+    refs: [
+      { cite: "Rose, G. (1981). Strategy of prevention: lessons from cardiovascular disease. British Medical Journal, 282(6279), 1847–1851.", doi: "10.1136/bmj.282.6279.1847" }
+    ]
+  },
+  {
+    id: 'productivity-paradox',
+    name: 'Productivity Paradox',
+    kind: 'paradox',
+    family: 'measurement',
+    trap: "Massive investment in a technology shows up everywhere except in the measured productivity statistics.",
+    example: "Brynjolfsson (1993) reviewed the 1970s–80s puzzle (after Solow's 'you can see the computer age everywhere but in the productivity statistics'): firm- and economy-level data showed little IT return, which he traced largely to mismeasurement, lags, and redistribution rather than a true absence of value.",
+    why: "Outputs of information work (quality, variety, timeliness) are poorly captured by conventional productivity measures, and benefits arrive with long lags after complementary changes — so real gains are invisible to the metric.",
+    antidote: "Before concluding 'no effect', ask whether your outcome measure can even capture the value, and whether the time window covers the lag. Absence in a coarse metric is not absence of effect.",
+    stages: ['measurement', 'analysis', 'interpretation'],
+    links: [],
+    also: ['streetlight-effect', 'goodharts-law'],
+    refs: [
+      { cite: "Brynjolfsson, E. (1993). The productivity paradox of information technology. Communications of the ACM, 36(12), 66–77.", doi: "10.1145/163298.163309" }
+    ]
   }
 ];
 
