@@ -483,6 +483,7 @@ function openPitfall(id){
       <span class="fam">${esc(FAMILY_LABELS[p.family]||p.family)}</span>
     </div>
     <div class="m-title">${esc(p.name)}</div>
+    <button class="fp-play" data-play="${esc(p.id)}" title="Narrated scene-by-scene walkthrough — speaks only this hand-cited entry, verbatim">▶ Explainer — narrated</button>
     <div class="m-trap">${esc(p.trap)}</div>
     <div class="m-sec"><h4>📎 Worked example</h4><p>${esc(p.example)}</p></div>
     <div class="m-sec"><h4>🧠 Why it happens</h4><p>${esc(p.why)}</p></div>
@@ -510,6 +511,199 @@ function openFromHash(){
   const m = location.hash.match(/^#\/(.+)$/);
   if(m && byId(m[1])) openPitfall(m[1]);
 }
+
+/* ── Narrated explainer player (fp-*) ─────────────────────────────────
+   Plays a pitfall as a narrated, animated walkthrough: title → trap →
+   example → why → antidote → sources → outro. NO-FABRICATION: speech is
+   the entry's hand-cited fields VERBATIM plus short template connectives.
+   speechSynthesis with neural-voice ranking (Edge "Online (Natural)" >
+   Google US English > default), sentence-chunked utterances; advances on
+   a reading-speed timer when muted/unavailable. */
+(function(){
+  const css = `
+.fp-play{display:inline-flex;align-items:center;gap:7px;margin:10px 0 4px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.fp-play:hover{border-color:var(--magenta);color:var(--magenta);}
+.fp-backdrop{position:fixed;inset:0;z-index:1200;background:rgba(8,5,14,.85);backdrop-filter:blur(6px);display:grid;place-items:center;padding:24px;}
+.fp-stage{width:min(900px,94vw);min-height:min(560px,84vh);background:#15101f;border:1px solid rgba(203,184,232,.22);border-radius:20px;padding:44px 48px 18px;display:flex;flex-direction:column;color:#f3eefc;}
+.fp-scene{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:15px;animation:fp-fade .5s ease both;}
+@keyframes fp-fade{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fp-kicker{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8d7aaa;}
+.fp-title{font-size:clamp(22px,3.2vw,32px);font-weight:800;line-height:1.2;margin:0;max-width:760px;color:#f3eefc;}
+.fp-grad{background:linear-gradient(135deg,#FF9656,#F14575 55%,#9270F4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.fp-meta{font-size:15px;color:#cbb8e8;max-width:680px;}
+.fp-badge{font-size:12.5px;font-weight:700;color:#f5c97b;border:1px solid #f59e0b66;border-radius:999px;padding:6px 14px;}
+.fp-text{font-size:clamp(17px,2.2vw,20px);line-height:1.65;max-width:720px;margin:0;color:#f3eefc;text-align:left;}
+.fp-items{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;max-width:720px;}
+.fp-item{background:rgba(255,255,255,.05);border:1px solid rgba(203,184,232,.35);border-radius:14px;padding:11px 16px;font-size:15px;line-height:1.45;text-align:left;}
+.fp-controls{display:flex;align-items:center;gap:8px;padding-top:13px;border-top:1px solid rgba(203,184,232,.14);}
+.fp-btn{width:36px;height:36px;border-radius:999px;border:1px solid rgba(203,184,232,.3);background:transparent;color:#f3eefc;font-size:15px;cursor:pointer;display:grid;place-items:center;}
+.fp-btn:hover:not(:disabled){border-color:#F14575;color:#F14575;}
+.fp-btn:disabled{opacity:.35;cursor:default;}
+.fp-progress{flex:1;display:flex;gap:6px;justify-content:center;}
+.fp-dot{width:9px;height:9px;border-radius:999px;border:none;padding:0;background:rgba(203,184,232,.25);cursor:pointer;}
+.fp-dot.done{background:rgba(203,184,232,.55);}
+.fp-dot.on{background:linear-gradient(135deg,#FF9656,#F14575);transform:scale(1.25);}
+.fp-close{margin-left:auto;}
+@media (max-width:640px){.fp-stage{padding:26px 18px 12px;}}`;
+  const st = document.createElement('style'); st.id = 'fp-style'; st.textContent = css; document.head.appendChild(st);
+
+  const speechOK = 'speechSynthesis' in window;
+  function rankVoice(v){
+    if(!/^en[-_]/i.test(v.lang)) return -1;
+    let s = 0;
+    if(/natural/i.test(v.name)) s += 8;
+    if(/andrew/i.test(v.name)) s += 3;
+    if(/aria|emma|jenny|guy|brian|christopher/i.test(v.name)) s += 1;
+    if(/google/i.test(v.name)) s += 4;
+    if(/en[-_]US/i.test(v.lang)) s += 1;
+    return s;
+  }
+  function bestVoice(){
+    const ranked = speechSynthesis.getVoices().map(v=>({v,s:rankVoice(v)})).filter(x=>x.s>=0).sort((a,b)=>b.s-a.s);
+    return ranked.length ? ranked[0].v : null;
+  }
+  function chunks(text,max){
+    const parts = text.match(/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g) || [text];
+    const out = []; let cur = '';
+    for(const s of parts){ if(cur && (cur+s).length>max){ out.push(cur.trim()); cur=''; } cur += s; }
+    if(cur.trim()) out.push(cur.trim());
+    return out;
+  }
+  const fallbackMs = t => Math.max(3500, Math.round((t.split(/\s+/).length/160)*60000)+1400);
+
+  function fpScenes(p){
+    const fam = FAMILY_LABELS[p.family]||p.family;
+    const sc = [
+      {kind:'title', speech:`${p.name}. A ${p.kind} in the ${fam} family of research traps.`},
+      {label:'⚠ The trap', text:p.trap, speech:`The trap. ${p.trap}`},
+      {label:'📎 Worked example', text:p.example, speech:`A worked example. ${p.example}`},
+      {label:'🧠 Why it happens', text:p.why, speech:`Why it happens. ${p.why}`},
+      {label:'🛡 How to detect & avoid', text:p.antidote, speech:`How to detect and avoid it. ${p.antidote}`},
+    ];
+    if(p.refs && p.refs.length){
+      const cites = p.refs.map(r=>r.cite);
+      sc.push({label:'Sources — hand-verified', items:cites, speech:`Sources. ${cites.join('. ')}`});
+    }
+    sc.push({kind:'outro', speech:`That is ${p.name.toLowerCase().startsWith('the ')?p.name:'the '+p.name}. Every fact here is hand-cited — follow the DOI links on the card before citing.`});
+    return sc;
+  }
+
+  let fpState = null; // {p, scenes, idx, muted, paused, el, timer, dead}
+  function fpStop(){ if(speechOK) speechSynthesis.cancel(); if(fpState) clearTimeout(fpState.timer); }
+  function fpClose(){ fpStop(); if(fpState && fpState.el) fpState.el.remove(); fpState = null; }
+
+  function fpRender(){
+    const {p, scenes, idx, muted, paused} = fpState;
+    const s = scenes[idx];
+    const fam = FAMILY_LABELS[p.family]||p.family;
+    let body = '';
+    if(s.kind === 'title'){
+      body = `<div class="fp-kicker">Pitfall explainer · narrated</div>
+        <h2 class="fp-title">${esc(p.name)}</h2>
+        <div class="fp-meta">${esc(p.kind)} · ${esc(fam)} family</div>
+        <div class="fp-badge">Hand-cited · sources on the card</div>`;
+    } else if(s.kind === 'outro'){
+      body = `<h2 class="fp-title fp-grad">${esc(p.name)}</h2>
+        <div class="fp-meta">Every fact hand-cited — verify via the DOI links before citing.</div>
+        <div class="fp-badge">Explained in FallacyScope</div>`;
+    } else if(s.items){
+      body = `<div class="fp-kicker">${esc(s.label)}</div>
+        <ul class="fp-items">${s.items.map(it=>`<li class="fp-item">${esc(it)}</li>`).join('')}</ul>`;
+    } else {
+      body = `<div class="fp-kicker">${esc(s.label)}</div><p class="fp-text">${esc(s.text)}</p>`;
+    }
+    fpState.el.querySelector('.fp-scene').innerHTML = body;
+    fpState.el.querySelector('.fp-pause').textContent = paused ? '▶' : '⏸';
+    const mbtn = fpState.el.querySelector('.fp-mute');
+    if(mbtn) mbtn.textContent = muted ? '🔇' : '🔊';
+    fpState.el.querySelectorAll('.fp-dot').forEach((d,i)=>{
+      d.className = 'fp-dot' + (i===idx?' on':i<idx?' done':'');
+    });
+    fpState.el.querySelector('.fp-prev').disabled = idx===0;
+  }
+
+  function fpGoto(i){
+    if(!fpState) return;
+    fpStop();
+    fpState.paused = false;
+    if(i >= fpState.scenes.length){ fpClose(); return; }
+    fpState.idx = Math.max(0,i);
+    fpRender();
+    fpSpeak();
+  }
+
+  function fpSpeak(){
+    const st8 = fpState; if(!st8) return;
+    const s = st8.scenes[st8.idx];
+    let advanced = false;
+    const next = ()=>{ if(advanced || fpState!==st8) return; advanced = true; st8.timer = setTimeout(()=>fpGoto(st8.idx+1), 700); };
+    if(!st8.muted && speechOK){
+      const cs = chunks(s.speech, 300); let ci = 0;
+      const speakNext = ()=>{
+        if(advanced || fpState!==st8) return;
+        if(ci >= cs.length){ next(); return; }
+        const u = new SpeechSynthesisUtterance(cs[ci++]);
+        u.rate = 0.95;
+        const v = bestVoice(); if(v) u.voice = v;
+        u.onend = speakNext;
+        u.onerror = e=>{ if(e.error==='not-allowed'){ st8.muted = true; fpRender(); st8.timer = setTimeout(next, fallbackMs(s.speech)); } else speakNext(); };
+        speechSynthesis.speak(u);
+      };
+      speechSynthesis.cancel();
+      speakNext();
+      st8.timer = setTimeout(next, fallbackMs(s.speech)*2.5); // safety net
+    } else {
+      st8.timer = setTimeout(next, fallbackMs(s.speech));
+    }
+  }
+
+  function playPitfall(id){
+    const p = byId(id); if(!p) return;
+    fpClose();
+    const el = document.createElement('div');
+    el.className = 'fp-backdrop';
+    el.innerHTML = `<div class="fp-stage" role="dialog" aria-modal="true" aria-label="Narrated pitfall walkthrough">
+      <div class="fp-scene"></div>
+      <div class="fp-controls">
+        <button class="fp-btn fp-prev" aria-label="Previous">‹</button>
+        <button class="fp-btn fp-pause" aria-label="Pause">⏸</button>
+        <button class="fp-btn fp-next" aria-label="Next">›</button>
+        ${speechOK?'<button class="fp-btn fp-mute" aria-label="Mute narration">🔊</button>':''}
+        <div class="fp-progress">${fpScenes(p).map((_,i)=>`<button class="fp-dot" data-i="${i}" aria-label="Scene ${i+1}"></button>`).join('')}</div>
+        <button class="fp-btn fp-close" aria-label="Close">✕</button>
+      </div></div>`;
+    document.body.appendChild(el);
+    fpState = { p, scenes: fpScenes(p), idx: 0, muted: !speechOK, paused: false, el, timer: 0 };
+    el.addEventListener('click', e=>{ if(e.target===el) fpClose(); });
+    el.querySelector('.fp-prev').onclick = ()=>fpGoto(fpState.idx-1);
+    el.querySelector('.fp-next').onclick = ()=>fpGoto(fpState.idx+1);
+    el.querySelector('.fp-close').onclick = fpClose;
+    el.querySelector('.fp-pause').onclick = ()=>{
+      if(fpState.paused){ if(!fpState.muted && speechOK) speechSynthesis.resume(); else fpGoto(fpState.idx+1); fpState.paused=false; }
+      else { if(!fpState.muted && speechOK) speechSynthesis.pause(); clearTimeout(fpState.timer); fpState.paused=true; }
+      fpRender();
+    };
+    const mbtn = el.querySelector('.fp-mute');
+    if(mbtn) mbtn.onclick = ()=>{ fpStop(); fpState.muted = !fpState.muted; fpRender(); fpSpeak(); };
+    el.querySelectorAll('.fp-dot').forEach(d=>{ d.onclick = ()=>fpGoto(+d.dataset.i); });
+    fpRender();
+    fpSpeak();
+  }
+
+  // Capture-phase keys so Escape closes the player, not the modal behind it.
+  document.addEventListener('keydown', e=>{
+    if(!fpState) return;
+    if(e.key==='Escape'){ e.stopImmediatePropagation(); fpClose(); }
+    else if(e.key==='ArrowRight'){ fpGoto(fpState.idx+1); }
+    else if(e.key==='ArrowLeft'){ fpGoto(fpState.idx-1); }
+    else if(e.key===' '){ e.preventDefault(); fpState.el.querySelector('.fp-pause').click(); }
+  }, true);
+
+  document.body.addEventListener('click', e=>{
+    const btn = e.target.closest('[data-play]');
+    if(btn) playPitfall(btn.dataset.play);
+  });
+})();
 
 /* ── Boot ── */
 buildChips();
