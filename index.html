@@ -214,6 +214,44 @@ html[data-theme="dark"] .k-bias{color:#FFB082;}
 .foot a{color:var(--violet);font-weight:600;}
 .foot .big{font-family:'Fraunces',serif;font-size:1rem;color:var(--ink-soft);margin-bottom:6px;}
 
+/* ── 2026-07 pass: hero stats · stage matrix · checklists · citation copy · print guide ── */
+.hero-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.hstat{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);border-radius:999px;padding:6px 13px;cursor:pointer;transition:.15s;font-weight:600;}
+.hstat b{color:var(--ink);font-weight:700;}
+.hstat:hover{border-color:var(--violet);color:var(--ink);}
+.mx-wrap{margin:14px 0 4px;overflow-x:auto;}
+.mx{border-collapse:collapse;min-width:480px;width:100%;}
+.mx th,.mx td{border:1px solid var(--line);padding:8px 10px;text-align:center;font-size:.82rem;}
+.mx th{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);background:var(--paper-3);}
+.mx td.rowh{text-align:left;font-weight:700;font-size:.85rem;background:var(--paper-2);}
+.mx td button{border:0;background:transparent;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;width:100%;padding:2px 0;border-radius:8px;}
+.mx td button:hover{background:var(--grad-soft);}
+.mx td .z{color:var(--ink-faint);font-weight:400;}
+.mx-note{font-size:.72rem;color:var(--ink-faint);margin-top:6px;}
+.stage-tools{display:flex;gap:6px;}
+.chk-btn{font-family:inherit;font-size:.7rem;font-weight:700;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-soft);border-radius:999px;padding:4px 11px;cursor:pointer;transition:.15s;white-space:nowrap;}
+.chk-btn:hover{border-color:var(--magenta);color:var(--magenta);}
+.ref-copy{display:inline-flex;gap:6px;margin-top:4px;}
+.copy-btn{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.06em;border:1px solid var(--line);background:var(--paper-2);color:var(--ink-faint);border-radius:999px;padding:3px 9px;cursor:pointer;transition:.15s;}
+.copy-btn:hover{border-color:var(--violet);color:var(--ink);}
+#fs-toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,8px);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:999px;font-size:.8rem;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:5000;}
+#fs-toast.show{opacity:1;transform:translate(-50%,0);}
+#printGuide{display:none;}
+@media print{
+  body.print-fg > :not(#printGuide){display:none !important;}
+  body.print-fg::before{display:none !important;}
+  body.print-fg{background:#fff !important;}
+  body.print-fg #printGuide{display:block;font-family:Georgia,serif;color:#000;}
+  #printGuide .pg-entry{page-break-inside:avoid;border-bottom:1px solid #999;padding:10px 0;}
+  #printGuide h1{font-size:20px;margin:0 0 2px;}
+  #printGuide .pg-sub{font-size:11px;color:#444;margin-bottom:10px;}
+  #printGuide h2{font-size:14px;margin:0 0 2px;}
+  #printGuide .pg-kind{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#555;}
+  #printGuide p{font-size:10.5px;line-height:1.45;margin:3px 0;}
+  #printGuide .pg-lab{font-weight:700;}
+  #printGuide .pg-ref{font-size:9px;color:#333;}
+}
+
 @media(max-width:560px){
   .hero{padding:34px 0 18px;}
   .stage-head .desc{display:none;}
@@ -272,6 +310,7 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     <div class="kicker">Paradoxes · Fallacies · Biases</div>
     <h1>The ways research <span class="hl">reasoning goes wrong</span>.</h1>
     <p>A curated field guide to the paradoxes, fallacies and biases that bend social-science &amp; management research. Each entry: what the trap is, a real worked example, why it happens, and how to avoid it — every one hand-cited to a canonical source you can verify.</p>
+    <div class="hero-stats" id="heroStats"></div>
   </section>
 
   <section class="controls">
@@ -281,7 +320,8 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
         <button data-mode="stage">🧭 By research stage</button>
         <button data-mode="quiz">🎯 Quiz</button>
       </div>
-      <input class="input search" id="search" type="search" placeholder="Search traps, examples, mechanisms…" autocomplete="off" />
+      <input class="input search" id="search" type="search" placeholder="Search traps, examples, synonyms…" autocomplete="off" />
+      <button class="chip" id="printBtn" title="Print the current selection as a compact pocket field guide (or save as PDF)">🖨 Field guide</button>
     </div>
 
     <div id="filters">
@@ -314,6 +354,9 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
 <div class="scrim" id="scrim" role="dialog" aria-modal="true">
   <div class="modal" id="modal"></div>
 </div>
+
+<!-- Print-only pocket field guide (filled on demand) -->
+<div id="printGuide" aria-hidden="true"></div>
 
 <script src="pitfalls.js"></script>
 <script>
@@ -377,17 +420,70 @@ $('#modeSeg').addEventListener('click', e=>{ const b=e.target.closest('button');
 });
 $('#search').addEventListener('input', e=>{ state.q=e.target.value.trim().toLowerCase(); render(); });
 
+/* ── Search aliases: established alternate names ONLY (each is the standard
+     synonym used in the cited literature — no invented terminology). ── */
+const ALIASES = {
+  'simpsons-paradox':['yule-simpson effect','amalgamation paradox'],
+  'berksons-paradox':['collider bias','admission-rate bias'],
+  'ecological-fallacy':['aggregation bias'],
+  'atomistic-fallacy':['individualistic fallacy'],
+  'base-rate-fallacy':['base rate neglect'],
+  'prosecutors-fallacy':['transposed conditional'],
+  'gamblers-fallacy':['monte carlo fallacy'],
+  'regression-to-the-mean':['regression artifact','regression fallacy'],
+  'survivorship-bias':['survival bias'],
+  'sunk-cost-fallacy':['concorde fallacy','escalation of commitment'],
+  'availability-heuristic':['availability bias'],
+  'confirmation-bias':['myside bias'],
+  'hindsight-bias':['knew-it-all-along effect','creeping determinism'],
+  'texas-sharpshooter-harking':['harking','texas sharpshooter'],
+  'p-hacking':['data dredging','data fishing','garden of forking paths','significance chasing'],
+  'publication-bias':['file drawer problem'],
+  'common-method-bias':['common method variance','cmv','mono-method bias'],
+  'jingle-jangle':['jingle fallacy','jangle fallacy'],
+  'hawthorne-effect':['observer effect'],
+  'demand-characteristics':['good-subject effect'],
+  'experimenter-expectancy':['rosenthal effect','observer-expectancy effect'],
+  'law-of-the-instrument':["maslow's hammer",'golden hammer'],
+  'conjunction-fallacy':['linda problem'],
+  'fundamental-attribution-error':['correspondence bias'],
+  'immortal-time-bias':['guarantee-time bias'],
+  'lbw-paradox':['low birth-weight paradox','birth-weight paradox'],
+  'will-rogers-phenomenon':['stage migration'],
+  'easterlin-paradox':['happiness-income paradox'],
+  'streetlight-effect':["drunkard's search"],
+  'range-restriction':['restriction of range'],
+  'status-quo-bias':['default bias'],
+  'productivity-paradox':['solow paradox'],
+  'correlation-not-causation':['cum hoc ergo propter hoc'],
+  'confounding':['omitted variable bias','third-variable problem'],
+  'anchoring':['anchoring effect','anchoring and adjustment']
+};
+
 /* ── Filtering ── */
 function filtered(){
   return DATA.filter(p=>{
     if(state.kind!=='all' && p.kind!==state.kind) return false;
     if(state.family!=='all' && p.family!==state.family) return false;
     if(state.q){
-      const hay = (p.name+' '+p.trap+' '+p.example+' '+p.why+' '+p.antidote+' '+(FAMILY_LABELS[p.family]||p.family)).toLowerCase();
+      const hay = (p.name+' '+p.trap+' '+p.example+' '+p.why+' '+p.antidote+' '
+        +(FAMILY_LABELS[p.family]||p.family)+' '+(ALIASES[p.id]||[]).join(' ')).toLowerCase();
       if(!hay.includes(state.q)) return false;
     }
     return true;
   });
+}
+
+/* ── Copy helper + toast ── */
+let _toastEl,_toastT;
+function fsToast(m){
+  if(!_toastEl){_toastEl=document.createElement('div');_toastEl.id='fs-toast';document.body.appendChild(_toastEl);}
+  _toastEl.textContent=m;_toastEl.classList.add('show');
+  clearTimeout(_toastT);_toastT=setTimeout(()=>_toastEl.classList.remove('show'),1800);
+}
+function copyText(t,msg){
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject())
+    .then(()=>fsToast(msg||'Copied'),()=>fsToast('Copy blocked by the browser'));
 }
 
 /* ── Card markup ── */
@@ -423,15 +519,16 @@ function render(){
   } else {
     // By research stage — a trap appears under every stage it bites.
     count.textContent = `${list.length} ${list.length===1?'entry':'entries'} across the research lifecycle`;
-    let html = '';
+    let html = stageMatrixHTML(list);
     for(const s of STAGE_ORDER){
       const inStage = list.filter(p=>p.stages.includes(s));
       if(!inStage.length) continue;
       const meta = STAGE_LABELS[s];
-      html += `<section class="stage-sec">
+      html += `<section class="stage-sec" id="ss-${s}">
         <div class="stage-head">
           <h3>${meta.icon} ${esc(meta.label)}</h3>
           <span class="n">${inStage.length}</span>
+          <span class="stage-tools"><button class="chk-btn" data-chk="${s}" title="Copy this stage's pitfalls as a markdown checklist">⎘ Checklist</button></span>
           <span class="desc">${esc(meta.desc)}</span>
         </div>
         <div class="mini-list">${inStage.map(p=>`
@@ -446,6 +543,82 @@ function render(){
 }
 function resetFilters(){ state.kind='all'; state.family='all'; state.q=''; $('#search').value=''; buildChips(); render(); }
 
+/* ── Stage × type matrix — counts from the filtered set; click drills in ── */
+function stageMatrixHTML(list){
+  const kinds = [['paradox','Paradoxes'],['fallacy','Fallacies'],['bias','Biases']];
+  const rows = STAGE_ORDER.map(s=>{
+    const cells = kinds.map(([k])=>{
+      const n = list.filter(p=>p.stages.includes(s)&&p.kind===k).length;
+      return `<td>${n?`<button data-mx="${s}|${k}" title="Filter to the ${n} ${k} ${n===1?'entry':'entries'} biting ${esc(STAGE_LABELS[s].label)}">${n}</button>`:'<span class="z">–</span>'}</td>`;
+    }).join('');
+    const tot = list.filter(p=>p.stages.includes(s)).length;
+    return `<tr><td class="rowh">${STAGE_LABELS[s].icon} ${esc(STAGE_LABELS[s].label)}</td>${cells}<td><b>${tot}</b></td></tr>`;
+  }).join('');
+  return `<div class="mx-wrap"><table class="mx" aria-label="Pitfalls by research stage and type">
+    <thead><tr><th>Stage</th><th>Paradoxes</th><th>Fallacies</th><th>Biases</th><th>All</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="mx-note">Counts from the ${list.length} entries matching the current filters — a trap counts under every stage it bites. Click a cell to filter.</div></div>`;
+}
+
+/* ── Per-stage markdown checklist (verbatim names + antidotes) ── */
+function stageChecklist(s){
+  const items = DATA.filter(p=>p.stages.includes(s));
+  const meta = STAGE_LABELS[s];
+  const md = `## ${meta.label} — pitfall checklist (FallacyScope)\n\n`
+    + items.map(p=>`- [ ] **${p.name}** (${p.kind}) — ${p.antidote}`).join('\n')
+    + `\n\n_${items.length} hand-cited traps · https://syahmedu.github.io/fallacyscope/_\n`;
+  copyText(md, `${meta.label} checklist copied — ${items.length} items (markdown)`);
+}
+$('#view').addEventListener('click', e=>{
+  const mx = e.target.closest('[data-mx]');
+  if(mx){
+    const [s,k] = mx.dataset.mx.split('|');
+    state.kind = k; buildChips(); render();
+    requestAnimationFrame(()=>document.getElementById('ss-'+s)?.scrollIntoView({behavior:'smooth',block:'start'}));
+    return;
+  }
+  const chk = e.target.closest('[data-chk]');
+  if(chk) stageChecklist(chk.dataset.chk);
+});
+
+/* ── Hero stat chips — real counts, click to filter ── */
+(function(){
+  const el = document.getElementById('heroStats'); if(!el) return;
+  const n = k => DATA.filter(p=>p.kind===k).length;
+  const sources = new Set(DATA.flatMap(p=>p.refs.map(r=>r.cite))).size;
+  el.innerHTML = [['paradox','paradoxes'],['fallacy','fallacies'],['bias','biases']]
+    .map(([k,pl])=>`<button class="hstat" data-kstat="${k}"><b>${n(k)}</b> ${pl}</button>`).join('')
+    + `<button class="hstat" data-kstat="all"><b>${DATA.length}</b> traps · <b>${sources}</b> hand-verified sources</button>`;
+  el.addEventListener('click', e=>{
+    const b = e.target.closest('[data-kstat]'); if(!b) return;
+    state.kind = b.dataset.kstat; state.mode = 'browse';
+    $('#modeSeg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.mode==='browse'));
+    buildChips(); render();
+    $('#count').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+})();
+
+/* ── Print field guide: the current selection, compact, verbatim ── */
+function buildPrintGuide(){
+  const list = state.mode==='quiz' ? DATA : filtered();
+  const pg = document.getElementById('printGuide');
+  pg.innerHTML = `<h1>FallacyScope — pocket field guide</h1>
+    <div class="pg-sub">${list.length} of ${DATA.length} entries · every fact hand-cited · syahmedu.github.io/fallacyscope · printed ${new Date().toISOString().slice(0,10)}</div>`
+    + list.map(p=>`<div class="pg-entry">
+      <h2>${esc(p.name)}</h2>
+      <div class="pg-kind">${esc(p.kind)} · ${esc(FAMILY_LABELS[p.family]||p.family)} · bites: ${p.stages.map(s=>STAGE_LABELS[s]?.label||s).join(', ')}</div>
+      <p><span class="pg-lab">Trap.</span> ${esc(p.trap)}</p>
+      <p><span class="pg-lab">Example.</span> ${esc(p.example)}</p>
+      <p><span class="pg-lab">Why.</span> ${esc(p.why)}</p>
+      <p><span class="pg-lab">Avoid.</span> ${esc(p.antidote)}</p>
+      ${p.refs.map(r=>`<div class="pg-ref">${esc(r.cite)}${r.doi?' · doi.org/'+esc(r.doi):''}</div>`).join('')}
+    </div>`).join('');
+  document.body.classList.add('print-fg');
+  window.print();
+}
+window.addEventListener('afterprint', ()=>document.body.classList.remove('print-fg'));
+$('#printBtn')?.addEventListener('click', buildPrintGuide);
+
 /* ── Quiz mode — "spot the trap" from the real entries ── */
 const QUIZ = { correct:0, total:0, current:null, answered:false };
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -456,15 +629,17 @@ function quizNew(){
   const pool = shuffle(same.length>=3 ? same : DATA.filter(p=>p.id!==answer.id));
   const opts = shuffle([answer, ...pool.slice(0,3)]);
   QUIZ.current = answer.id;
+  // Two directions, both from the verbatim entries: trap→name and name→trap.
+  QUIZ.reverse = Math.random() < 0.5;
   $('#view').innerHTML = `
     <div class="quiz">
       <div class="quiz-head">
-        <span class="quiz-prompt">Identify the trap</span>
+        <span class="quiz-prompt">${QUIZ.reverse?'Which is the trap?':'Identify the trap'}</span>
         <span class="quiz-score">Score ${QUIZ.correct}/${QUIZ.total}</span>
       </div>
-      <div class="quiz-trap">“${esc(answer.trap)}”</div>
+      <div class="quiz-trap">${QUIZ.reverse?esc(answer.name):'“'+esc(answer.trap)+'”'}</div>
       <div class="quiz-opts">
-        ${opts.map(o=>`<button class="quiz-opt" onclick="quizAnswer('${o.id}')">${esc(o.name)}</button>`).join('')}
+        ${opts.map(o=>`<button class="quiz-opt" onclick="quizAnswer('${o.id}')">${esc(QUIZ.reverse?o.trap:o.name)}</button>`).join('')}
       </div>
       <div id="quiz-feedback"></div>
     </div>`;
@@ -499,17 +674,27 @@ document.body.addEventListener('click', e=>{
   const opener = e.target.closest('[data-open]');
   if(opener){ openPitfall(opener.dataset.open); }
 });
+let CURRENT_P = null;
 function openPitfall(id){
   const p = byId(id); if(!p) return;
+  CURRENT_P = p;
   const stages = p.stages.map(s=>`<span class="stage-tag">${STAGE_LABELS[s]?.icon||''} ${esc(STAGE_LABELS[s]?.label||s)}</span>`).join('');
-  const links = (p.links&&p.links.length)
-    ? `<div class="m-sec"><h4>Connect it in the suite</h4><div class="m-links">${p.links.map(l=>
-        `<a class="m-link" href="${esc(suiteUrl(l))}" target="_blank" rel="noopener">↗ ${esc(l.label)}</a>`).join('')}</div></div>` : '';
-  const related = (p.also&&p.also.length)
-    ? `<div class="m-sec"><h4>Related traps</h4><div class="related">${p.also.map(rid=>{
-        const r=byId(rid); return r?`<button class="rel-btn" data-open="${r.id}">${esc(r.name)} →</button>`:'';}).join('')}</div></div>` : '';
-  const refs = `<div class="m-sec"><h4>Sources — verify each</h4><ul class="refs">${p.refs.map(r=>
-      `<li class="ref">${esc(r.cite)}${r.doi?` <a href="https://doi.org/${esc(r.doi)}" target="_blank" rel="noopener">doi.org/${esc(r.doi)}</a>`:''}</li>`).join('')}</ul>
+  const suiteLinks = [
+    ...(p.links||[]).map(l=>`<a class="m-link" href="${esc(suiteUrl(l))}" target="_blank" rel="noopener">↗ ${esc(l.label)}</a>`),
+    `<a class="m-link" href="https://syahmedu.github.io/syeds-research-book/?q=${encodeURIComponent(p.name)}" target="_blank" rel="noopener">📚 Search the 9,388-paper corpus for it</a>`
+  ];
+  const links = `<div class="m-sec"><h4>Connect it in the suite</h4><div class="m-links">${suiteLinks.join('')}</div></div>`;
+  // Related = authored links PLUS computed backlinks (entries whose also[] points here).
+  const rel = (p.also||[]).filter(rid=>byId(rid));
+  const back = DATA.filter(r=>r.id!==p.id && (r.also||[]).includes(p.id) && !rel.includes(r.id)).map(r=>r.id);
+  const relatedIds = [...rel, ...back];
+  const related = relatedIds.length
+    ? `<div class="m-sec"><h4>Related traps</h4><div class="related">${relatedIds.map(rid=>{
+        const r=byId(rid); const isBack=back.includes(rid);
+        return `<button class="rel-btn" data-open="${r.id}"${isBack?' title="That entry links back to this one"':''}>${isBack?'← ':''}${esc(r.name)}${isBack?'':' →'}</button>`;}).join('')}</div></div>` : '';
+  const refs = `<div class="m-sec"><h4>Sources — verify each</h4><ul class="refs">${p.refs.map((r,i)=>
+      `<li class="ref">${esc(r.cite)}${r.doi?` <a href="https://doi.org/${esc(r.doi)}" target="_blank" rel="noopener">doi.org/${esc(r.doi)}</a>`:''}
+       <div class="ref-copy"><button class="copy-btn" data-copyref="${i}" title="Copy the citation verbatim">⎘ APA</button>${r.doi?`<button class="copy-btn" data-copydoi="${i}" title="Copy the doi.org link">⎘ DOI</button>`:''}</div></li>`).join('')}</ul>
       <div class="verify">Bibliographic facts are real and hand-checked; follow the link to confirm before citing.</div></div>`;
 
   $('#modal').innerHTML = `
@@ -540,6 +725,12 @@ function closeModal(){
   if(location.hash.startsWith('#/')) history.replaceState(null,'','#');
 }
 $('#scrim').addEventListener('click', e=>{ if(e.target===$('#scrim')) closeModal(); });
+$('#modal').addEventListener('click', e=>{
+  const a = e.target.closest('[data-copyref]');
+  if(a && CURRENT_P){ const r = CURRENT_P.refs[+a.dataset.copyref]; copyText(r.cite + (r.doi?' https://doi.org/'+r.doi:''), 'APA citation copied — verbatim'); return; }
+  const d = e.target.closest('[data-copydoi]');
+  if(d && CURRENT_P){ const r = CURRENT_P.refs[+d.dataset.copydoi]; copyText('https://doi.org/'+r.doi, 'DOI link copied'); }
+});
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#scrim').classList.contains('show')) closeModal(); });
 
 /* ── Deep link: #/<id> opens that trap on load ── */
@@ -705,7 +896,7 @@ function openFromHash(){
         <button class="fp-btn fp-pause" aria-label="Pause">⏸</button>
         <button class="fp-btn fp-next" aria-label="Next">›</button>
         ${speechOK?'<button class="fp-btn fp-mute" aria-label="Mute narration">🔊</button>':''}
-        <div class="fp-progress">${fpScenes(p).map((_,i)=>`<button class="fp-dot" data-i="${i}" aria-label="Scene ${i+1}"></button>`).join('')}</div>
+        <div class="fp-progress">${fpScenes(p).map((s,i)=>{const lab=s.label||(s.kind==='title'?'Title':'Wrap-up');return `<button class="fp-dot" data-i="${i}" title="${esc(lab)}" aria-label="Scene ${i+1}: ${esc(lab)}"></button>`;}).join('')}</div>
         <button class="fp-btn fp-close" aria-label="Close">✕</button>
       </div></div>`;
     document.body.appendChild(el);
