@@ -138,6 +138,21 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .k-fallacy{background:rgba(241,69,117,.15);color:var(--magenta);}
 .k-bias{background:rgba(255,150,86,.18);color:#C9722F;}
 html[data-theme="dark"] .k-bias{color:#FFB082;}
+/* ── the stream (hero): one stone per trap, placed by research stage ── */
+.stream{margin:26px 0 0;background:var(--paper-2);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow-sm);
+  --water:#dcebe9;--water2:#c6dedb;--flow:rgba(255,255,255,.75);--k-paradox:#9270F4;--k-fallacy:#F14575;--k-bias:#F08A45;--weather:#2a2338}
+html[data-theme="dark"] .stream{--water:#13232a;--water2:#0f1c22;--flow:rgba(160,220,230,.18);--k-paradox:#A78BFA;--k-fallacy:#F47FBE;--k-bias:#FFB082;--weather:#05040a}
+.st-svg{line-height:0}.st-svg svg{display:block;width:100%;height:auto}
+.stream figcaption{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 18px 14px;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--ink-faint);line-height:1.55}
+.st-read{flex:1 1 100%;font-size:13.5px;color:var(--ink-soft);min-height:1.6em}.st-read b{color:var(--ink)}
+.st-how{flex:1}.st-how summary{cursor:pointer;font-weight:600;color:var(--ink-soft)}.st-how span{display:block;margin-top:6px}
+.lg{display:inline-block;width:10px;height:10px;vertical-align:-1px;margin:0 2px}.lg-p{border-radius:50%;background:var(--k-paradox)}.lg-f{background:var(--k-fallacy);clip-path:polygon(50% 0,100% 40%,80% 100%,15% 95%,0 35%)}.lg-b{height:6px;border-radius:50%;background:var(--k-bias);vertical-align:1px}
+.stone{cursor:pointer;transition:opacity .25s}.st-svg:hover .stone{opacity:.45}.st-svg .stone:hover,.st-svg .stone:focus{opacity:1}
+.stone:focus{outline:none}.stone:focus-visible .ring{stroke:var(--violet);stroke-width:2.5}
+.wake{opacity:.16;transition:opacity .25s}.wake.on{opacity:.9}
+.flow{fill:none;stroke:var(--flow);stroke-linecap:round;animation:stFlow var(--d,14s) linear infinite;animation-play-state:paused}
+.stream[data-play="1"] .flow{animation-play-state:running}
+@keyframes stFlow{to{stroke-dashoffset:-400}}
 .fam{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);}
 .card-title{font-family:'Fraunces',serif;font-weight:600;font-size:1.22rem;letter-spacing:-.02em;line-height:1.12;}
 .card-trap{font-size:.88rem;color:var(--ink-soft);line-height:1.45;}
@@ -316,6 +331,16 @@ mk();if(document.readyState==="loading")document.addEventListener("DOMContentLoa
     <h1>The ways research <span class="hl">reasoning goes wrong</span>.</h1>
     <p>A curated field guide to the paradoxes, fallacies and biases that bend social-science &amp; management research. Each entry: what the trap is, a real worked example, why it happens, and how to avoid it — every one hand-cited to a canonical source you can verify.</p>
     <div class="hero-stats" id="heroStats"></div>
+    <figure class="stream" id="stream">
+      <div class="st-svg"></div>
+      <figcaption>
+        <span class="st-read" aria-live="polite"></span>
+        <details class="st-how"><summary>How to read this</summary>
+          <span>One stone per trap, dropped into the stretch of research where it first bites; its faint wake runs downstream to the last stage it bites, with a dot at each stage in between (hover a stone to light its wake). Headers: traps that enter a stretch · traps that bite there. Stones that bite more stages are bigger. Shape and colour show the type: <i class="lg lg-p"></i> paradox (round), <i class="lg lg-f"></i> fallacy (angular), <i class="lg lg-b"></i> bias (flat). Darker, more weathered stones have older canonical sources (earliest cited year, 1886–2016). Stacking and the water are layout, not data. Select a stone to open its entry.</span>
+        </details>
+        <button class="chip" id="streamFlow" type="button" hidden>▶ Let it flow</button>
+      </figcaption>
+    </figure>
   </section>
 
   <section class="controls">
@@ -585,6 +610,83 @@ $('#view').addEventListener('click', e=>{
   const chk = e.target.closest('[data-chk]');
   if(chk) stageChecklist(chk.dataset.chk);
 });
+
+/* ── The stream: one stone per trap — x = mean of its real stages[], size = how many stages,
+      shape/colour = kind, weathering = earliest cited year. Packing and water are layout only. ── */
+(function(){
+  const fig=document.getElementById('stream'); if(!fig) return;
+  const box=fig.querySelector('.st-svg'), read=fig.querySelector('.st-read');
+  const yearOf=p=>Math.min(...p.refs.map(r=>+((r.cite||'').match(/\((\d{4})/)||[])[1]).filter(Boolean));
+  const items=DATA.map(p=>{const ix=(p.stages||[]).map(s=>STAGE_ORDER.indexOf(s)).filter(i=>i>=0);
+    return {p,ix,m:ix.length?Math.min(...ix):0,last:ix.length?Math.max(...ix):0,n:Math.max(1,ix.length),y:yearOf(p)};});  /* m = first stage it bites */
+  const Y0=Math.min(...items.map(i=>i.y)), Y1=Math.max(...items.map(i=>i.y));
+  const stageN=s=>DATA.filter(p=>(p.stages||[]).includes(s)).length, enterN=i=>items.filter(it=>it.m===i).length;
+  let W0=0;
+  function rnd(seed){return()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};}
+  function shape(kind,x,y,r,R){
+    if(kind==='paradox')return `<circle cx="${x}" cy="${y}" r="${r}"/>`;
+    if(kind==='bias')return `<ellipse cx="${x}" cy="${y}" rx="${(r*1.45).toFixed(1)}" ry="${(r*.72).toFixed(1)}" transform="rotate(${(R()*24-12).toFixed(0)} ${x} ${y})"/>`;
+    const k=6,pts=[];for(let i=0;i<k;i++){const a=i/k*Math.PI*2+R()*.5,rr=r*(.8+R()*.38);pts.push((x+Math.cos(a)*rr).toFixed(1)+','+(y+Math.sin(a)*rr).toFixed(1));}
+    return `<polygon points="${pts.join(' ')}"/>`;
+  }
+  function draw(){
+    const W=Math.max(320,box.clientWidth), small=W<640, H=small?268:310; W0=W;
+    const padX=small?10:28, top=small?50:56, bot=H-(small?18:22), cw=(W-2*padX)/6;
+    const X=m=>padX+(m+.5)*cw, R=rnd(11);  /* stones pack around the centre of their entry stage */
+    const rad=n=>(small?4.6:6.4)+(n-1)*(small?1.6:2.3);
+    let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-labelledby="stT"><title id="stT">The stream: ${DATA.length} traps placed by the research stages where they bite</title>`+
+      `<defs><linearGradient id="stW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--water)"/><stop offset="1" stop-color="var(--water2)"/></linearGradient></defs>`;
+    /* river band with soft banks */
+    const bank=(y,amp,ph)=>{let d='';for(let x=0;x<=W;x+=W/24){d+=(x?'L':'M')+x.toFixed(1)+','+(y+Math.sin(x/W*Math.PI*3+ph)*amp).toFixed(1);}return d;};
+    s+=`<rect x="0" y="${top-16}" width="${W}" height="${bot-top+32}" fill="url(#stW)"/>`+
+       `<path d="${bank(top-8,5,0)} L${W},0 L0,0 Z" fill="var(--paper-2)"/><path d="${bank(bot+8,5,1.3)} L${W},${H} L0,${H} Z" fill="var(--paper-2)"/>`;
+    for(let k=0;k<(small?6:9);k++){const y=top+(bot-top)*(k+.5)/(small?6:9);
+      s+=`<path class="flow" d="${bank(y,3+k%3,k)}" stroke-width="${1+k%2}" stroke-dasharray="${18+k*7} ${40+k*9}" style="--d:${12+k*2.5}s"/>`;}
+    /* stage reaches */
+    STAGE_ORDER.forEach((st,i)=>{const x=padX+i*cw;
+      if(i)s+=`<line x1="${x}" x2="${x}" y1="${top-14}" y2="${bot+10}" stroke="var(--line)" stroke-dasharray="2 5"/>`;
+      s+=`<text x="${x+cw/2}" y="${small?18:22}" text-anchor="middle" font-size="${small?9.5:12}" font-weight="700" fill="var(--ink-soft)" font-family="Plus Jakarta Sans,sans-serif">${small?STAGE_LABELS[st].label.slice(0,6)+(STAGE_LABELS[st].label.length>6?'.':''):STAGE_LABELS[st].label}</text>`+
+         `<text x="${x+cw/2}" y="${small?32:38}" text-anchor="middle" font-size="${small?9:10.5}" fill="var(--ink-faint)" font-family="Plus Jakarta Sans,sans-serif">${small?enterN(i)+' · '+stageN(st):enterN(i)+' enter · '+stageN(st)+' bite'}</text>`;});
+    /* pack stones: nearest free spot to (x of mean stage, mid-stream) */
+    const placed=[], mid=(top+bot)/2;
+    items.slice().sort((a,b)=>b.n-a.n||a.m-b.m||a.y-b.y).forEach(it=>{
+      const r=rad(it.n), x0=X(it.m); let best=null;
+      for(let ring=0;ring<60&&!best;ring++){const cands=[];
+        for(let a=0;a<Math.max(1,ring*6);a++){const ang=a/Math.max(1,ring*6)*Math.PI*2, d=ring*(small?2.6:3.4);cands.push([x0+Math.cos(ang)*Math.min(d*1.2,cw/2-r-2),mid+Math.sin(ang)*d]);}
+        for(const [x,y] of cands){if(y-r<top||y+r>bot||x-r<padX||x+r>W-padX)continue;
+          if(placed.every(q=>Math.hypot(q.x-x,q.y-y)>q.r+r+(small?1.6:2.4))){best=[x,y];break;}}}
+      if(!best)best=[x0,mid];
+      placed.push({x:best[0],y:best[1],r,it});});
+    /* wakes first (under the stones): from where a trap enters to the last stage it bites, a dot per stage */
+    placed.forEach(({x,y,it})=>{if(it.last===it.m)return;const x2=X(it.last);
+      s+=`<g class="wake" data-w="${it.p.id}" stroke="var(--k-${it.p.kind})" fill="var(--k-${it.p.kind})"><line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y.toFixed(1)}" stroke-width="1.3"/>`+it.ix.filter(k=>k!==it.m).map(k=>`<circle cx="${X(k).toFixed(1)}" cy="${y.toFixed(1)}" r="2"/>`).join('')+'</g>';});
+    placed.forEach(({x,y,r,it},i)=>{ /* coords as numbers */const p=it.p, R2=rnd(3+i*7), w=Y1>Y0?(Y1-it.y)/(Y1-Y0):0;
+      x=+x.toFixed(1);y=+y.toFixed(1);const sh=shape(p.kind,x,y,r,R2), R3=rnd(3+i*7);
+      s+=`<a href="#/${p.id}" class="stone" data-id="${p.id}" aria-label="${p.name.replace(/"/g,'&quot;')}: ${p.kind}, bites at ${p.stages.map(z=>STAGE_LABELS[z].label).join(', ')}, earliest source ${it.y}">`+
+        `<g fill="rgba(0,0,0,.18)" transform="translate(1.2 2)">${sh}</g>`+
+        `<g fill="var(--k-${p.kind})">${sh}</g>`+
+        `<g fill="var(--weather)" opacity="${(w*.62).toFixed(2)}">${sh}</g>`+
+        `<g class="ring" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1">${shape(p.kind,x,y,r,R3)}</g></a>`;});
+    s+='</svg>';
+    box.innerHTML=s;
+    const idle=`<b>${DATA.length} traps</b> in the stream of a study, from design to interpretation · hover or tab to a stone, select it to open the entry.`;
+    read.innerHTML=idle;
+    box.querySelectorAll('.stone').forEach(a=>{const it=items.find(i=>i.p.id===a.dataset.id), p=it.p;
+      const say=()=>{box.querySelectorAll('.wake').forEach(w=>w.classList.toggle('on',w.dataset.w===p.id));read.innerHTML=`<b>${p.name}</b> · ${p.kind} — ${p.trap} <span style="color:var(--ink-faint)">· bites at ${p.stages.map(z=>STAGE_LABELS[z].label).join(', ')} · earliest source ${it.y}</span>`;};
+      a.addEventListener('mouseenter',say);a.addEventListener('focus',say);
+      const off=()=>{read.innerHTML=idle;box.querySelectorAll('.wake.on').forEach(w=>w.classList.remove('on'));};a.addEventListener('mouseleave',off);a.addEventListener('blur',off);
+      a.addEventListener('click',e=>{e.preventDefault();openPitfall(p.id);});});
+  }
+  draw();
+  let t=0;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(()=>{if(Math.abs(box.clientWidth-W0)>4)draw();},160);});
+  /* slow water, only while visible; reduced motion stays still unless this device opted in (shared syed_flow) */
+  const rm=matchMedia('(prefers-reduced-motion: reduce)').matches, fb=document.getElementById('streamFlow');
+  let flow=false,vis=true;try{flow=localStorage.getItem('syed_flow')==='1';}catch(e){}
+  const apply=()=>{fig.dataset.play=(vis&&(!rm||flow))?'1':'0';fb.hidden=!rm;fb.textContent=flow?'❚❚ Keep still':'▶ Let it flow';};
+  fb.onclick=()=>{flow=!flow;try{localStorage.setItem('syed_flow',flow?'1':'0');}catch(e){}apply();};
+  if('IntersectionObserver' in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;apply();}).observe(fig);
+  apply();
+})();
 
 /* ── Hero stat chips — real counts, click to filter ── */
 (function(){
