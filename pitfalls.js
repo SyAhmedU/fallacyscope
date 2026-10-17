@@ -855,6 +855,661 @@ const PITFALLS = [
     refs: [
       { cite: "Brynjolfsson, E. (1993). The productivity paradox of information technology. Communications of the ACM, 36(12), 66–77.", doi: "10.1145/163298.163309" }
     ]
+  },
+  // ── 2026-10-17 expansion: every DOI below re-checked against Crossref (title, authors, year, venue) ──
+  {
+    id: 'steins-paradox',
+    name: "Stein's Paradox (Shrinkage)",
+    kind: 'paradox',
+    family: 'statistical',
+    trap: "Estimating each group's mean from its own data alone is beaten, in total accuracy, by pulling every estimate toward the grand mean — even when the groups are unrelated.",
+    example: "Efron & Morris (1977) took 18 baseball players' batting averages after their first 45 at-bats. Shrinking each average toward the group mean (the James–Stein estimator) predicted the players' remaining-season averages better than each player's own early average did.",
+    why: "With three or more means estimated together, the noise in each raw estimate makes extreme values too extreme. Borrowing strength from the group trades a little bias for a large cut in variance, lowering total squared error.",
+    antidote: "When ranking many units (teams, branches, journals, schools) from noisy data, use multilevel/partial-pooling estimates instead of raw means, and be suspicious of 'top' and 'bottom' units drawn from small samples.",
+    stages: ['analysis', 'inference'],
+    links: [
+      { tool: 'toolsscope', label: 'Fit a multilevel model in ToolsScope', arg: 'Estimate unit means with partial pooling (random intercepts) instead of raw per-unit means' }
+    ],
+    also: ['regression-to-the-mean', 'winners-curse'],
+    refs: [
+      { cite: "Efron, B., & Morris, C. (1977). Stein's paradox in statistics. Scientific American, 236(5), 119–127.", doi: "10.1038/scientificamerican0577-119" }
+    ]
+  },
+  {
+    id: 'jeffreys-lindley-paradox',
+    name: "Jeffreys–Lindley Paradox",
+    kind: 'paradox',
+    family: 'statistical',
+    trap: "With a very large sample, a result can be 'significant at 5%' while the same data, analysed in a Bayesian way, favour the null hypothesis.",
+    example: "Lindley (1957) showed that for a fixed p-value just under .05, the posterior probability of a point null can approach 1 as the sample size grows, so the two frameworks reach opposite conclusions from the same data.",
+    why: "A fixed significance threshold ignores sample size. In huge samples, a tiny, practically trivial deviation produces p < .05, while a prior that spreads belief over plausible effect sizes finds the null more consistent with the data.",
+    antidote: "In large-N studies (big surveys, platform data), report effect sizes with intervals and judge practical importance. Do not let 'p < .05' carry the claim, and consider Bayes factors or equivalence tests.",
+    stages: ['analysis', 'inference'],
+    links: [],
+    also: ['p-value-misinterpretation', 'difference-in-significance'],
+    refs: [
+      { cite: "Lindley, D. V. (1957). A statistical paradox. Biometrika, 44(1–2), 187–192.", doi: "10.1093/biomet/44.1-2.187" }
+    ]
+  },
+  {
+    id: 'choice-overload',
+    name: 'Choice Overload (Paradox of Choice)',
+    kind: 'paradox',
+    family: 'decision',
+    trap: "Offering more options can reduce the chance that people choose anything at all — but the effect is far less general than the famous study suggests.",
+    example: "In Iyengar & Lepper's (2000) jam-tasting study, 30% of shoppers who saw a display of 6 jams bought one versus 3% of those who saw 24. A later meta-analysis of 50 experiments (Scheibehenne, Greifeneder & Todd, 2010) found a mean choice-overload effect of virtually zero, with large variation across conditions.",
+    why: "Large assortments raise the cost of comparing options and the anticipated regret, but whether that outweighs the benefit of variety depends on preferences, expertise and how options are organised.",
+    antidote: "Treat a striking single study as a hypothesis about conditions, not a law. Check the meta-analytic evidence and look for moderators before building a design or intervention on it.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['publication-bias', 'winners-curse', 'narrative-fallacy'],
+    refs: [
+      { cite: "Iyengar, S. S., & Lepper, M. R. (2000). When choice is demotivating: Can one desire too much of a good thing? Journal of Personality and Social Psychology, 79(6), 995–1006.", doi: "10.1037/0022-3514.79.6.995" },
+      { cite: "Scheibehenne, B., Greifeneder, R., & Todd, P. M. (2010). Can there ever be too many options? A meta-analytic review of choice overload. Journal of Consumer Research, 37(3), 409–425.", doi: "10.1086/651235" }
+    ]
+  },
+  {
+    id: 'abilene-paradox',
+    name: 'Abilene Paradox',
+    kind: 'paradox',
+    family: 'decision',
+    trap: "A group agrees to a course of action that no individual member actually wants, because each assumes the others want it.",
+    example: "Harvey (1974) describes his family driving 53 miles to Abilene, Texas, on a hot July afternoon in a car without air-conditioning for a poor meal. Afterwards it emerged that nobody, including the person who suggested it, had wanted to go.",
+    why: "Fear of separation and of voicing dissent makes members misread the group's preference. The failure is in managing agreement, not conflict: private agreement goes unspoken.",
+    antidote: "In research teams and supervisory meetings, make dissent cheap: ask each person privately or in turn what they actually prefer, and name the paradox when a plan has no clear owner.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['status-quo-bias', 'false-consensus'],
+    refs: [
+      { cite: "Harvey, J. B. (1974). The Abilene paradox: The management of agreement. Organizational Dynamics, 3(1), 63–80.", doi: "10.1016/0090-2616(74)90005-9" }
+    ]
+  },
+  {
+    id: 'allais-paradox',
+    name: 'Allais Paradox',
+    kind: 'paradox',
+    family: 'decision',
+    trap: "People's choices between risky options systematically violate expected-utility theory's independence axiom.",
+    example: "Allais (1953) showed that many people prefer a sure 100 million francs over a lottery giving a 10% chance of 500 million, 89% of 100 million and 1% of nothing, yet also prefer a 10% chance of 500 million over an 11% chance of 100 million. No single utility function fits both choices.",
+    why: "Certainty carries extra psychological weight (the certainty effect). Removing a common consequence from both options changes preferences, which expected-utility theory forbids.",
+    antidote: "Don't assume respondents are expected-utility maximisers when modelling risky choices. Prospect-theory-style weighting is often a better descriptive model, and choice framing must be held constant across conditions.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['framing-effect', 'loss-aversion', 'ellsberg-paradox'],
+    refs: [
+      { cite: "Allais, M. (1953). Le comportement de l'homme rationnel devant le risque: Critique des postulats et axiomes de l'école américaine. Econometrica, 21(4), 503–546.", doi: "10.2307/1907921" }
+    ]
+  },
+  {
+    id: 'ellsberg-paradox',
+    name: 'Ellsberg Paradox (Ambiguity Aversion)',
+    kind: 'paradox',
+    family: 'decision',
+    trap: "People prefer known risks to unknown ones, even when that preference is inconsistent with any probability belief.",
+    example: "Ellsberg (1961): an urn holds 30 red balls and 60 balls that are black or yellow in unknown proportion. Most people prefer betting on red over black, but prefer betting on 'black or yellow' over 'red or yellow'. No assignment of probabilities makes both preferences consistent.",
+    why: "Missing information about probabilities (ambiguity) is disliked in itself, separately from risk, which violates Savage's axioms of subjective expected utility.",
+    antidote: "When studying decisions under uncertainty (strategy, entrepreneurship, investment), distinguish risk from ambiguity in the design and measures, and do not code all uncertainty as one variable.",
+    stages: ['design', 'measurement'],
+    links: [],
+    also: ['allais-paradox', 'status-quo-bias'],
+    refs: [
+      { cite: "Ellsberg, D. (1961). Risk, ambiguity, and the Savage axioms. The Quarterly Journal of Economics, 75(4), 643–669.", doi: "10.2307/1884324" }
+    ]
+  },
+  {
+    id: 'condorcet-paradox',
+    name: "Voting Paradox (Condorcet / Arrow)",
+    kind: 'paradox',
+    family: 'levels',
+    trap: "Individually consistent preferences can add up to an inconsistent group preference, so 'what the group wants' may not exist.",
+    example: "With three voters ranking A>B>C, B>C>A and C>A>B, a majority prefers A to B, B to C, and C to A, which is a cycle. Arrow (1950) proved that no ranking rule can satisfy a small set of reasonable fairness conditions for every possible preference profile.",
+    why: "Majority aggregation does not preserve transitivity. The group-level 'preference' depends on the agenda and the voting rule, not just on members' views.",
+    antidote: "Be careful attributing preferences, values or intentions to teams and organisations from aggregated member data, and report the aggregation rule, since a different rule can give a different 'collective' answer.",
+    stages: ['measurement', 'interpretation'],
+    links: [],
+    also: ['ecological-fallacy', 'abilene-paradox'],
+    refs: [
+      { cite: "Arrow, K. J. (1950). A difficulty in the concept of social welfare. Journal of Political Economy, 58(4), 328–346.", doi: "10.1086/256963" }
+    ]
+  },
+  {
+    id: 'jevons-paradox',
+    name: "Jevons Paradox (Rebound Effect)",
+    kind: 'paradox',
+    family: 'causal',
+    trap: "Making a resource more efficient to use can increase, rather than decrease, total consumption of it.",
+    example: "Jevons (1865) argued that more efficient steam engines would raise, not lower, Britain's coal consumption by making coal-powered work cheaper. Alcott (2005) reviews the history and evidence on this rebound.",
+    why: "Efficiency lowers the effective price of the service, which raises demand and opens new uses. The direct saving can be partly or fully offset at the system level.",
+    antidote: "When evaluating efficiency interventions (green HRM, digital tools, time-saving practices), measure total system-level use, not only per-unit savings, and look for displaced or expanded use.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['productivity-paradox', 'goodharts-law'],
+    refs: [
+      { cite: "Alcott, B. (2005). Jevons' paradox. Ecological Economics, 54(1), 9–21.", doi: "10.1016/j.ecolecon.2005.03.020" }
+    ]
+  },
+  {
+    id: 'too-much-of-a-good-thing',
+    name: 'Too-Much-of-a-Good-Thing Effect',
+    kind: 'paradox',
+    family: 'statistical',
+    trap: "A normally beneficial antecedent stops helping, then starts hurting, past an inflection point, but a linear model reports one positive slope.",
+    example: "Pierce & Aguinis (2013) reviewed management findings in which ordinarily beneficial antecedents, such as personality traits and leadership behaviours, show curvilinear (inverted-U) relations with desirable outcomes, a pattern linear models conceal.",
+    why: "Many organisational resources have diminishing and then negative returns. A linear specification averages the rising and falling parts into one misleading coefficient.",
+    antidote: "Test for curvilinearity (a squared term, or splines) when theory allows an optimum, check the range of your data covers the inflection point, and report where the turning point falls.",
+    stages: ['design', 'analysis', 'interpretation'],
+    links: [
+      { tool: 'toolsscope', label: 'Test a curvilinear term in ToolsScope', arg: 'Add a centred squared predictor to test an inverted-U relation and locate the turning point' }
+    ],
+    also: ['range-restriction', 'dichotomization'],
+    refs: [
+      { cite: "Pierce, J. R., & Aguinis, H. (2013). The too-much-of-a-good-thing effect in management. Journal of Management, 39(2), 313–338.", doi: "10.1177/0149206311410060" }
+    ]
+  },
+  {
+    id: 'self-fulfilling-prophecy',
+    name: 'Self-Fulfilling Prophecy',
+    kind: 'paradox',
+    family: 'causal',
+    trap: "A false belief about a situation evokes behaviour that makes the belief come true, and that outcome is then taken as proof it was right all along.",
+    example: "Merton (1948) used the run on a solvent bank: a rumour of insolvency leads depositors to withdraw their money, and the withdrawals make the bank insolvent.",
+    why: "Expectations are causes, not just forecasts. When the predicted outcome depends on how people act, the prediction changes the system it describes.",
+    antidote: "Where expectations can shape outcomes (performance ratings, labels, forecasts shared with participants), measure expectations as variables, blind raters where possible, and do not read confirmation as validation.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['experimenter-expectancy', 'confirmation-bias', 'hawthorne-effect'],
+    refs: [
+      { cite: "Merton, R. K. (1948). The self-fulfilling prophecy. The Antioch Review, 8(2), 193–210.", doi: "10.2307/4609267" }
+    ]
+  },
+  {
+    id: 'garden-of-forking-paths',
+    name: 'Garden of Forking Paths',
+    kind: 'fallacy',
+    family: 'integrity',
+    trap: "Even without deliberate p-hacking, choosing the analysis after seeing the data makes a single reported test far less trustworthy than its p-value claims.",
+    example: "Gelman & Loken (2014) argue that each data-dependent choice (which outcome, which subgroup, which exclusions, which covariates) defines a test that would have been run had the data looked different. The nominal p-value assumes a fixed plan that never existed.",
+    why: "The multiplicity is in potential comparisons, not ones actually tried. Honest researchers following plausible-looking paths still inflate false positives.",
+    antidote: "Pre-register the analysis plan, or clearly label analyses as exploratory. Report robustness across reasonable specifications (multiverse analysis), and confirm surprising findings in new data.",
+    stages: ['analysis', 'inference'],
+    links: [
+      { tool: 'researchflow', label: 'Draft a pre-registered plan in ResearchFlow', arg: 'Pre-specify outcomes, exclusions, covariates and subgroup tests before data collection' }
+    ],
+    also: ['p-hacking', 'texas-sharpshooter-harking', 'winners-curse'],
+    refs: [
+      { cite: "Gelman, A., & Loken, E. (2014). The statistical crisis in science. American Scientist, 102(6), 460–465.", doi: "10.1511/2014.111.460" },
+      { cite: "Simmons, J. P., Nelson, L. D., & Simonsohn, U. (2011). False-positive psychology: Undisclosed flexibility in data collection and analysis allows presenting anything as significant. Psychological Science, 22(11), 1359–1366.", doi: "10.1177/0956797611417632" }
+    ]
+  },
+  {
+    id: 'difference-in-significance',
+    name: "Difference-in-Significance Fallacy",
+    kind: 'fallacy',
+    family: 'statistical',
+    trap: "Concluding that two effects differ because one is significant and the other is not.",
+    example: "Gelman & Stern (2006): an estimate of 25 (SE 10) is significant and one of 10 (SE 10) is not, yet their difference of 15 (SE ≈ 14) is nowhere near significant. Nieuwenhuis, Forstmann & Wagenmakers (2011) found about half of the neuroscience papers they examined that could make this error did make it.",
+    why: "'Significant' versus 'not significant' is a threshold split of two noisy estimates. The difference between them has its own, larger, standard error and must be tested directly.",
+    antidote: "To claim that men and women, two conditions or two countries differ in an effect, test the interaction or the difference itself. Never compare two separate p-values.",
+    stages: ['analysis', 'inference'],
+    links: [
+      { tool: 'toolsscope', label: 'Test the interaction in ToolsScope', arg: 'Test the group × predictor interaction directly instead of comparing separate subgroup p-values' }
+    ],
+    also: ['p-value-misinterpretation', 'absence-of-evidence'],
+    refs: [
+      { cite: "Gelman, A., & Stern, H. (2006). The difference between “significant” and “not significant” is not itself statistically significant. The American Statistician, 60(4), 328–331.", doi: "10.1198/000313006X152649" },
+      { cite: "Nieuwenhuis, S., Forstmann, B. U., & Wagenmakers, E.-J. (2011). Erroneous analyses of interactions in neuroscience: A problem of significance. Nature Neuroscience, 14(9), 1105–1107.", doi: "10.1038/nn.2886" }
+    ]
+  },
+  {
+    id: 'absence-of-evidence',
+    name: 'Absence of Evidence ≠ Evidence of Absence',
+    kind: 'fallacy',
+    family: 'statistical',
+    trap: "Reading a non-significant result as proof that there is no effect.",
+    example: "Altman & Bland (1995) warn that many trials are too small to detect plausible effects, so 'no significant difference' often reflects imprecision. The confidence interval may include both no effect and a substantial one.",
+    why: "A p-value above .05 means the data are compatible with no effect, not that they rule out an effect. Low power makes 'not significant' the expected result even when the effect is real.",
+    antidote: "Report and interpret the confidence interval. To claim 'no meaningful effect', run an equivalence test against a smallest effect size of interest and show the study had power for it.",
+    stages: ['inference', 'interpretation'],
+    links: [],
+    also: ['low-power-type-m-s', 'p-value-misinterpretation', 'difference-in-significance'],
+    refs: [
+      { cite: "Altman, D. G., & Bland, J. M. (1995). Statistics notes: Absence of evidence is not evidence of absence. BMJ, 311(7003), 485.", doi: "10.1136/bmj.311.7003.485" }
+    ]
+  },
+  {
+    id: 'p-value-misinterpretation',
+    name: 'P-Value Misinterpretation',
+    kind: 'fallacy',
+    family: 'statistical',
+    trap: "Treating p as the probability that the null hypothesis is true, the chance the result is a fluke, or the size or importance of an effect.",
+    example: "Greenland, Senn, Rothman, Carlin, Poole, Goodman & Altman (2016) catalogue two dozen common misreadings of p-values, confidence intervals and power, for example that p = .05 means a 5% chance the null is true, or that a 95% CI has a 95% chance of containing the true value in this study.",
+    why: "A p-value is the probability of data at least this extreme if the model (including the null and every assumption) were true. It says nothing directly about the probability of hypotheses or the size of effects.",
+    antidote: "Describe p-values as compatibility with a model, lead with effect sizes and intervals, and avoid 'significant/non-significant' as the headline of a finding.",
+    stages: ['inference', 'interpretation'],
+    links: [],
+    also: ['base-rate-fallacy', 'prosecutors-fallacy', 'jeffreys-lindley-paradox'],
+    refs: [
+      { cite: "Greenland, S., Senn, S. J., Rothman, K. J., Carlin, J. B., Poole, C., Goodman, S. N., & Altman, D. G. (2016). Statistical tests, P values, confidence intervals, and power: A guide to misinterpretations. European Journal of Epidemiology, 31(4), 337–350.", doi: "10.1007/s10654-016-0149-3" }
+    ]
+  },
+  {
+    id: 'table-2-fallacy',
+    name: 'Table 2 Fallacy',
+    kind: 'fallacy',
+    family: 'causal',
+    trap: "Interpreting every coefficient in a multivariable regression as an effect of that variable, when the model was built to estimate only one.",
+    example: "Westreich & Greenland (2013) show that in a model adjusting for confounders of an exposure–outcome effect, the confounders' own coefficients can be direct effects, confounded effects or neither, so reporting them side by side as 'effects' misleads.",
+    why: "Covariates are chosen to block confounding paths for the focal exposure. For a covariate, the same model may adjust for its mediators and omit its confounders.",
+    antidote: "Report the focal estimate. If you interpret a control variable's coefficient, justify a separate adjustment set for it, ideally from a causal diagram.",
+    stages: ['analysis', 'interpretation'],
+    links: [],
+    also: ['overadjustment-bias', 'confounding', 'endogeneity'],
+    refs: [
+      { cite: "Westreich, D., & Greenland, S. (2013). The Table 2 fallacy: Presenting and interpreting confounder and modifier coefficients. American Journal of Epidemiology, 177(4), 292–298.", doi: "10.1093/aje/kws412" }
+    ]
+  },
+  {
+    id: 'collider-bias',
+    name: 'Collider (Selection) Bias',
+    kind: 'bias',
+    family: 'causal',
+    trap: "Controlling for, or selecting on, a common effect of two variables creates an association between them that does not exist in the population.",
+    example: "Cole, Platt, Schisterman, Chu, Westreich, Richardson & Poole (2010) give simple worked illustrations showing how conditioning on a collider (a variable caused by both exposure and outcome) induces bias, even when exposure has no effect.",
+    why: "Within levels of a common effect, knowing one cause tells you about the other. Adjusting for it, or sampling only some of its values, opens a non-causal path.",
+    antidote: "Draw the causal diagram before choosing controls. Do not adjust for post-treatment variables or outcomes of both focal variables, and ask whether your sample was selected on such a variable (e.g., only employees who stayed, only published studies).",
+    stages: ['sampling', 'analysis'],
+    links: [],
+    also: ['berksons-paradox', 'lbw-paradox', 'overadjustment-bias', 'survivorship-bias'],
+    refs: [
+      { cite: "Cole, S. R., Platt, R. W., Schisterman, E. F., Chu, H., Westreich, D., Richardson, D., & Poole, C. (2010). Illustrating bias due to conditioning on a collider. International Journal of Epidemiology, 39(2), 417–420.", doi: "10.1093/ije/dyp334" }
+    ]
+  },
+  {
+    id: 'cross-sectional-mediation',
+    name: 'Cross-Sectional Mediation Fallacy',
+    kind: 'fallacy',
+    family: 'design',
+    trap: "Testing a causal process (X → M → Y) that unfolds over time with data measured at a single moment.",
+    example: "Maxwell & Cole (2007) showed analytically that cross-sectional estimates of a longitudinal mediation process can be badly biased, overstating or understating the indirect effect, and even suggesting mediation when there is none.",
+    why: "Mediation is a claim about change over time. Concurrent correlations mix stable between-person differences with within-person processes, and the bias depends on the unknown autoregressive structure.",
+    antidote: "Measure X, M and Y on separate occasions, ideally with repeated measures (cross-lagged or longitudinal mediation models). Otherwise present cross-sectional 'indirect effects' as associations consistent with, not evidence for, mediation.",
+    stages: ['design', 'analysis', 'inference'],
+    links: [
+      { tool: 'researchflow', label: 'Plan a multi-wave design in ResearchFlow', arg: 'Design a three-wave study measuring the predictor, mediator and outcome at separate time points' }
+    ],
+    also: ['correlation-not-causation', 'common-method-bias', 'endogeneity'],
+    refs: [
+      { cite: "Maxwell, S. E., & Cole, D. A. (2007). Bias in cross-sectional analyses of longitudinal mediation. Psychological Methods, 12(1), 23–44.", doi: "10.1037/1082-989X.12.1.23" }
+    ]
+  },
+  {
+    id: 'overadjustment-bias',
+    name: 'Overadjustment Bias',
+    kind: 'bias',
+    family: 'causal',
+    trap: "Adding a variable on the causal path (a mediator or its proxy) as a 'control' and removing part of the very effect you want to estimate.",
+    example: "Schisterman, Cole & Platt (2009) define overadjustment as control for an intermediate variable, or a descendant of one, on the path from exposure to outcome, and show it biases the total effect toward the null. They also distinguish it from merely unnecessary adjustment, which costs precision.",
+    why: "'More controls is safer' is false. Controlling for a mediator blocks the causal pathway, and controlling for a descendant of the outcome can create collider bias.",
+    antidote: "Classify every candidate control as a confounder, mediator, collider or precision variable before modelling. Keep mediators out of total-effect models and justify each covariate.",
+    stages: ['analysis'],
+    links: [],
+    also: ['table-2-fallacy', 'collider-bias', 'confounding'],
+    refs: [
+      { cite: "Schisterman, E. F., Cole, S. R., & Platt, R. W. (2009). Overadjustment bias and unnecessary adjustment in epidemiologic studies. Epidemiology, 20(4), 488–495.", doi: "10.1097/EDE.0b013e3181a819a1" }
+    ]
+  },
+  {
+    id: 'winners-curse',
+    name: "Winner's Curse (Inflated First Findings)",
+    kind: 'bias',
+    family: 'integrity',
+    trap: "The first study to report a significant effect usually overestimates it, so replications 'shrink' the effect.",
+    example: "Ioannidis (2008) explains why newly discovered true associations are typically inflated: a discovery is declared only when the estimate crosses a significance threshold, which selects the studies whose estimates happened to be too large, especially in small studies.",
+    why: "Filtering on significance is filtering on luck. Among underpowered studies, only the overestimates clear the bar.",
+    antidote: "Expect the first effect size to shrink when you plan sample sizes, power your study for a smaller, more conservative effect, and weight meta-analytic or replication estimates above original ones.",
+    stages: ['inference', 'interpretation'],
+    links: [],
+    also: ['publication-bias', 'low-power-type-m-s', 'regression-to-the-mean'],
+    refs: [
+      { cite: "Ioannidis, J. P. A. (2008). Why most discovered true associations are inflated. Epidemiology, 19(5), 640–648.", doi: "10.1097/EDE.0b013e31818131e7" }
+    ]
+  },
+  {
+    id: 'low-power-type-m-s',
+    name: 'Low Power (Type M & Type S Errors)',
+    kind: 'bias',
+    family: 'design',
+    trap: "In an underpowered study, a 'significant' result is likely to exaggerate the effect (Type M) and can even have the wrong sign (Type S).",
+    example: "Gelman & Carlin (2014) reanalysed a published claim that beautiful parents have more daughters and showed that, given plausible effect sizes and the sample, a significant estimate would exaggerate the true effect many times over and could easily point the wrong way. Cohen (1962) found the average power of studies in a 1960 volume of the Journal of Abnormal and Social Psychology to detect medium effects was below one half.",
+    why: "When true effects are small relative to noise, only large-by-chance estimates reach significance. Power analysis based on optimistic effect sizes hides the problem.",
+    antidote: "Run a design analysis before collecting data, using a realistic effect size from meta-analyses, not the original study, and report the study's sensitivity (the smallest effect it could reliably detect).",
+    stages: ['design', 'inference'],
+    links: [
+      { tool: 'researchflow', label: 'Plan sample size in ResearchFlow', arg: 'Justify the sample size from a conservative, meta-analytic effect size and report sensitivity' }
+    ],
+    also: ['winners-curse', 'absence-of-evidence', 'publication-bias'],
+    refs: [
+      { cite: "Gelman, A., & Carlin, J. (2014). Beyond power calculations: Assessing Type S (sign) and Type M (magnitude) errors. Perspectives on Psychological Science, 9(6), 641–651.", doi: "10.1177/1745691614551642" },
+      { cite: "Cohen, J. (1962). The statistical power of abnormal-social psychological research: A review. The Journal of Abnormal and Social Psychology, 65(3), 145–153.", doi: "10.1037/h0045186" },
+      { cite: "Ioannidis, J. P. A. (2005). Why most published research findings are false. PLoS Medicine, 2(8), e124.", doi: "10.1371/journal.pmed.0020124" }
+    ]
+  },
+  {
+    id: 'dichotomization',
+    name: 'Dichotomizing Continuous Variables (Median Splits)',
+    kind: 'fallacy',
+    family: 'measurement',
+    trap: "Splitting a continuous measure into 'high' and 'low' groups throws away information and can manufacture effects.",
+    example: "MacCallum, Zhang, Preacher & Rucker (2002) show that dichotomising quantitative variables usually loses effect size and power, and that splitting two correlated predictors can produce spurious main effects or interactions.",
+    why: "Everyone just above and just below the cut-point becomes maximally different, while very different people in the same half are treated as identical, so measurement error grows and relations distort.",
+    antidote: "Keep continuous variables continuous: use regression with the continuous predictor (and probe interactions with simple slopes or Johnson–Neyman), and justify any cut-point substantively.",
+    stages: ['measurement', 'analysis'],
+    links: [
+      { tool: 'toolsscope', label: 'Probe an interaction in ToolsScope', arg: 'Keep the moderator continuous and probe the interaction with simple slopes instead of a median split' }
+    ],
+    also: ['range-restriction', 'too-much-of-a-good-thing'],
+    refs: [
+      { cite: "MacCallum, R. C., Zhang, S., Preacher, K. J., & Rucker, D. D. (2002). On the practice of dichotomization of quantitative variables. Psychological Methods, 7(1), 19–40.", doi: "10.1037/1082-989X.7.1.19" }
+    ]
+  },
+  {
+    id: 'measurement-noninvariance',
+    name: 'Measurement Non-Invariance (Comparing Apples & Oranges)',
+    kind: 'bias',
+    family: 'measurement',
+    trap: "Comparing group means on a scale without checking that the scale measures the same construct in the same way in each group.",
+    example: "Vandenberg & Lance (2000) reviewed the measurement-invariance literature and set out the sequence of tests (configural, metric, scalar and more) needed before differences in means or relationships across groups, cultures or time can be interpreted.",
+    why: "If item loadings or intercepts differ across groups, an observed mean difference can reflect how people use the items, not a real difference in the construct.",
+    antidote: "Before comparing countries, genders, occupations or waves, test invariance with multi-group CFA. Report the level reached, and compare only what that level licenses.",
+    stages: ['measurement', 'analysis'],
+    links: [
+      { tool: 'toolsscope', label: 'Run a CFA in ToolsScope', arg: 'Fit the measurement model in each group and compare configural, metric and scalar invariance' }
+    ],
+    also: ['jingle-jangle', 'weird-samples'],
+    refs: [
+      { cite: "Vandenberg, R. J., & Lance, C. E. (2000). A review and synthesis of the measurement invariance literature: Suggestions, practices, and recommendations for organizational research. Organizational Research Methods, 3(1), 4–70.", doi: "10.1177/109442810031002" }
+    ]
+  },
+  {
+    id: 'endogeneity',
+    name: 'Endogeneity (Unwarranted Causal Claims)',
+    kind: 'bias',
+    family: 'causal',
+    trap: "Drawing causal conclusions from a predictor that is correlated with the error term, through omitted variables, simultaneity, measurement error or selection.",
+    example: "Antonakis, Bendahan, Jacquart & Lalive (2010) reviewed published leadership research and found that most causal claims rested on designs and estimators that did not address endogeneity. They set out remedies such as experiments, instrumental variables and panel methods.",
+    why: "When a predictor is endogenous, its coefficient absorbs the effects of whatever drives both it and the outcome, so the estimate is biased and can even flip sign. More data does not fix it.",
+    antidote: "Name the source of endogeneity, then choose a design that addresses it (randomisation, natural experiment, instruments, fixed effects, lagged designs). Otherwise phrase findings as associations.",
+    stages: ['design', 'analysis', 'inference'],
+    links: [
+      { tool: 'researchflow', label: 'Strengthen identification in ResearchFlow', arg: 'Identify omitted-variable, simultaneity and selection threats and choose a design that addresses them' }
+    ],
+    also: ['confounding', 'correlation-not-causation', 'common-method-bias'],
+    refs: [
+      { cite: "Antonakis, J., Bendahan, S., Jacquart, P., & Lalive, R. (2010). On making causal claims: A review and recommendations. The Leadership Quarterly, 21(6), 1086–1120.", doi: "10.1016/j.leaqua.2010.10.010" }
+    ]
+  },
+  {
+    id: 'ergodicity-fallacy',
+    name: 'Ergodic (Group-to-Individual) Fallacy',
+    kind: 'fallacy',
+    family: 'levels',
+    trap: "Assuming that a relationship found across people describes how the relationship works within each person over time.",
+    example: "Molenaar (2004) argued that psychological processes are generally non-ergodic, so between-person structure need not match within-person structure. Fisher, Medaglia & Jeronimus (2018) compared group-level and person-level estimates from intensive repeated-measures data and found group results often poorly approximated individuals.",
+    why: "Cross-sectional variation mixes differences between people with processes inside them. Only under strict (ergodic) conditions do the two coincide.",
+    antidote: "If your claim is about individuals (e.g., 'when demands rise, a person disengages'), collect within-person data (diary or experience sampling) and separate within- from between-person effects in multilevel models.",
+    stages: ['design', 'inference'],
+    links: [
+      { tool: 'researchflow', label: 'Design a diary study in ResearchFlow', arg: 'Use an experience-sampling design to estimate within-person effects separately from between-person differences' }
+    ],
+    also: ['ecological-fallacy', 'atomistic-fallacy'],
+    refs: [
+      { cite: "Molenaar, P. C. M. (2004). A manifesto on psychology as idiographic science: Bringing the person back into scientific psychology, this time forever. Measurement: Interdisciplinary Research and Perspectives, 2(4), 201–218.", doi: "10.1207/s15366359mea0204_1" },
+      { cite: "Fisher, A. J., Medaglia, J. D., & Jeronimus, B. F. (2018). Lack of group-to-individual generalizability is a threat to human subjects research. Proceedings of the National Academy of Sciences, 115(27), E6106–E6115.", doi: "10.1073/pnas.1711978115" }
+    ]
+  },
+  {
+    id: 'alpha-misuse',
+    name: "Cronbach's Alpha Misuse",
+    kind: 'fallacy',
+    family: 'measurement',
+    trap: "Treating a high alpha as proof that a scale is unidimensional, internally consistent and valid.",
+    example: "Sijtsma (2009) showed that alpha is neither a measure of internal consistency nor of unidimensionality: a multidimensional test can have a high alpha. Alpha is only a lower bound to reliability, and better lower bounds exist.",
+    why: "Alpha rises with the number of items and the average inter-item correlation, whatever the factor structure. It says nothing about what the items measure.",
+    antidote: "Test dimensionality with factor analysis first, then report a model-based reliability (e.g., omega) alongside alpha, and support validity with separate evidence.",
+    stages: ['measurement'],
+    links: [
+      { tool: 'scalescope', label: 'Check item reliability in ScaleScope', arg: 'Inspect item-total correlations and alpha-if-deleted, then confirm dimensionality with a CFA' }
+    ],
+    also: ['jingle-jangle', 'measurement-noninvariance'],
+    refs: [
+      { cite: "Sijtsma, K. (2009). On the use, the misuse, and the very limited usefulness of Cronbach's alpha. Psychometrika, 74(1), 107–120.", doi: "10.1007/s11336-008-9101-0" }
+    ]
+  },
+  {
+    id: 'nonresponse-bias',
+    name: 'Nonresponse Bias',
+    kind: 'bias',
+    family: 'selection',
+    trap: "Assuming a high response rate guarantees an unbiased survey, or a low one guarantees a biased one.",
+    example: "Groves (2006) reviewed methodological studies that estimated nonresponse bias and found that the nonresponse rate was a weak predictor of nonresponse bias. Bias arises when the reasons for responding are related to the variables being measured.",
+    why: "Bias depends on the covariance between response propensity and the survey variable. A 70% response can be badly biased on one item and fine on another.",
+    antidote: "Compare respondents with the frame on known variables, follow up late responders or a nonrespondent sample, and model or weight for response propensity. Do not use the response rate alone as evidence of quality.",
+    stages: ['sampling', 'inference'],
+    links: [],
+    also: ['survivorship-bias', 'collider-bias', 'weird-samples'],
+    refs: [
+      { cite: "Groves, R. M. (2006). Nonresponse rates and nonresponse bias in household surveys. Public Opinion Quarterly, 70(5), 646–675.", doi: "10.1093/poq/nfl033" }
+    ]
+  },
+  {
+    id: 'social-desirability-bias',
+    name: 'Social Desirability Bias',
+    kind: 'bias',
+    family: 'measurement',
+    trap: "Respondents report what makes them look good, not what is true, especially on sensitive topics (deviance, prejudice, misconduct, performance).",
+    example: "Nederhof (1985) reviewed methods for coping with social desirability bias, including forced-choice items, neutral question wording, the randomized-response technique, the bogus pipeline, self-administration and measuring desirability as a covariate.",
+    why: "Self-presentation motives and self-deception push answers toward social norms, distorting means and attenuating or inflating correlations with other self-reports.",
+    antidote: "Guarantee anonymity, use indirect or forced-choice formats for sensitive items, add other-report or behavioural measures, and measure social desirability so its influence can be tested.",
+    stages: ['measurement'],
+    links: [],
+    also: ['common-method-bias', 'demand-characteristics'],
+    refs: [
+      { cite: "Nederhof, A. J. (1985). Methods of coping with social desirability bias: A review. European Journal of Social Psychology, 15(3), 263–280.", doi: "10.1002/ejsp.2420150303" }
+    ]
+  },
+  {
+    id: 'weird-samples',
+    name: 'WEIRD Samples (Unrepresentative Populations)',
+    kind: 'bias',
+    family: 'selection',
+    trap: "Generalising findings about 'human' behaviour from Western, educated, industrialised, rich and democratic samples.",
+    example: "Henrich, Heine & Norenzayan (2010) reported that 96% of samples in top psychology journals came from Western industrialised countries housing about 12% of the world's population, and documented domains (visual perception, fairness, cooperation, reasoning) where these samples are outliers.",
+    why: "Convenience populations (students, online panels, one country's employees) differ systematically on the very processes studied, so effects can fail to travel.",
+    antidote: "Describe the sample's context explicitly, limit claims to comparable populations, and test boundary conditions across cultures, industries or occupations before claiming generality.",
+    stages: ['sampling', 'interpretation'],
+    links: [],
+    also: ['measurement-noninvariance', 'nonresponse-bias'],
+    refs: [
+      { cite: "Henrich, J., Heine, S. J., & Norenzayan, A. (2010). The weirdest people in the world? Behavioral and Brain Sciences, 33(2–3), 61–83.", doi: "10.1017/S0140525X0999152X" }
+    ]
+  },
+  {
+    id: 'halo-effect',
+    name: 'Halo Effect',
+    kind: 'bias',
+    family: 'measurement',
+    trap: "One global impression colours ratings of distinct, separate attributes.",
+    example: "Thorndike (1920) found that superiors' ratings of officers on different qualities (intelligence, physique, leadership, character) correlated far more highly than such distinct traits plausibly could, a 'constant error' in ratings.",
+    why: "Raters judge an overall impression first and then fill in specific dimensions from it, inflating correlations among supposedly separate criteria.",
+    antidote: "Use behaviourally anchored ratings, rate one dimension across all targets before moving to the next, add multiple raters, and be wary of very high intercorrelations among rated dimensions.",
+    stages: ['measurement'],
+    links: [],
+    also: ['common-method-bias', 'confirmation-bias'],
+    refs: [
+      { cite: "Thorndike, E. L. (1920). A constant error in psychological ratings. Journal of Applied Psychology, 4(1), 25–29.", doi: "10.1037/h0071663" }
+    ]
+  },
+  {
+    id: 'self-serving-bias',
+    name: 'Self-Serving Attribution Bias',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Crediting successes to oneself and blaming failures on circumstances.",
+    example: "Miller & Ross (1975) reviewed the evidence and found reasonable support for self-enhancing attributions after success but much weaker evidence for self-protective attributions after failure. They proposed non-motivational, information-processing explanations for much of the pattern.",
+    why: "People expect success, see a clearer link between their effort and good outcomes, and may protect self-esteem. The causes are debated, which is the point of the review.",
+    antidote: "Do not take self-reported causes of performance (e.g., managers explaining firm results) at face value, and pair self-attributions with external evidence.",
+    stages: ['measurement', 'interpretation'],
+    links: [],
+    also: ['fundamental-attribution-error', 'hindsight-bias', 'bias-blind-spot'],
+    refs: [
+      { cite: "Miller, D. T., & Ross, M. (1975). Self-serving biases in the attribution of causality: Fact or fiction? Psychological Bulletin, 82(2), 213–225.", doi: "10.1037/h0076486" }
+    ]
+  },
+  {
+    id: 'escalation-of-commitment',
+    name: 'Escalation of Commitment',
+    kind: 'bias',
+    family: 'decision',
+    trap: "Investing more in a failing course of action because you are responsible for having chosen it.",
+    example: "Staw (1976): business-school participants playing corporate executives allocated more R&D money to a division that was doing badly when they had personally made the original investment decision than when someone else had.",
+    why: "Self-justification: admitting the first decision was wrong is costly, so negative feedback prompts more commitment rather than less.",
+    antidote: "Separate the people who start a project from those who evaluate it, set stop rules in advance, and review decisions against criteria fixed before results come in. This applies to research projects too.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['sunk-cost-fallacy', 'confirmation-bias'],
+    refs: [
+      { cite: "Staw, B. M. (1976). Knee-deep in the big muddy: A study of escalating commitment to a chosen course of action. Organizational Behavior and Human Performance, 16(1), 27–44.", doi: "10.1016/0030-5073(76)90005-2" }
+    ]
+  },
+  {
+    id: 'motivated-reasoning',
+    name: 'Motivated Reasoning',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Wanting a particular conclusion shapes how evidence is searched for, evaluated and remembered, while the reasoner feels objective.",
+    example: "Kunda (1990) reviewed evidence that directional goals bias which beliefs and rules people access and how they construct justifications, constrained by their ability to build a seemingly reasonable case.",
+    why: "People do not believe whatever they like. They build the most plausible justification for the preferred conclusion and stop searching when it seems adequate.",
+    antidote: "Specify in advance what evidence would count against your hypothesis, invite adversarial review, and apply the same scrutiny to results you like as to results you dislike.",
+    stages: ['analysis', 'interpretation'],
+    links: [],
+    also: ['confirmation-bias', 'bias-blind-spot', 'garden-of-forking-paths'],
+    refs: [
+      { cite: "Kunda, Z. (1990). The case for motivated reasoning. Psychological Bulletin, 108(3), 480–498.", doi: "10.1037/0033-2909.108.3.480" }
+    ]
+  },
+  {
+    id: 'bias-blind-spot',
+    name: 'Bias Blind Spot',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Seeing cognitive and motivational biases in others while believing you are relatively free of them.",
+    example: "Pronin, Lin & Ross (2002) found that people rated themselves as less susceptible than the average American to a range of biases.",
+    why: "People judge their own objectivity by introspection, which feels unbiased, but judge others by their behaviour, where bias is visible.",
+    antidote: "Rely on procedures, not self-assessed objectivity: blind coding, pre-registration, independent replication and second coders.",
+    stages: ['interpretation'],
+    links: [],
+    also: ['motivated-reasoning', 'confirmation-bias', 'dunning-kruger'],
+    refs: [
+      { cite: "Pronin, E., Lin, D. Y., & Ross, L. (2002). The bias blind spot: Perceptions of bias in self versus others. Personality and Social Psychology Bulletin, 28(3), 369–381.", doi: "10.1177/0146167202286008" }
+    ]
+  },
+  {
+    id: 'false-consensus',
+    name: 'False Consensus Effect',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Overestimating how many other people share your own choices, beliefs and behaviours.",
+    example: "Ross, Greene & House (1977) asked students whether they would walk around campus wearing a sandwich-board sign. Those who agreed estimated that most peers would agree, and those who refused estimated that most would refuse.",
+    why: "We see our own choice as the natural response to the situation and mix with similar others, so our own behaviour serves as a biased sample.",
+    antidote: "Don't use researchers' or managers' intuitions as evidence of what respondents think. Pilot the instrument, and measure norms instead of assuming them.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['availability-heuristic', 'abilene-paradox'],
+    refs: [
+      { cite: "Ross, L., Greene, D., & House, P. (1977). The “false consensus effect”: An egocentric bias in social perception and attribution processes. Journal of Experimental Social Psychology, 13(3), 279–301.", doi: "10.1016/0022-1031(77)90049-X" }
+    ]
+  },
+  {
+    id: 'illusory-correlation',
+    name: 'Illusory Correlation',
+    kind: 'bias',
+    family: 'reasoning',
+    trap: "Perceiving a relationship between variables that are unrelated, because the pairing seems meaningful or distinctive.",
+    example: "Chapman (1967) showed observers word pairs in which every pairing appeared equally often. They nonetheless reported that semantically associated pairs (such as lion–tiger) had occurred together more often.",
+    why: "Prior expectations and distinctive co-occurrences are encoded and remembered more readily, so memory-based frequency judgements overstate them.",
+    antidote: "Count instead of recall: tabulate all four cells of a 2×2 (including absent–absent), and treat practitioners' 'we always see X with Y' as a hypothesis to test.",
+    stages: ['measurement', 'interpretation'],
+    links: [],
+    also: ['availability-heuristic', 'confirmation-bias', 'spurious-correlation'],
+    refs: [
+      { cite: "Chapman, L. J. (1967). Illusory correlation in observational report. Journal of Verbal Learning and Verbal Behavior, 6(1), 151–155.", doi: "10.1016/S0022-5371(67)80066-5" }
+    ]
+  },
+  {
+    id: 'citation-distortion',
+    name: 'Citation Distortion (Unfounded Authority)',
+    kind: 'bias',
+    family: 'integrity',
+    trap: "A claim becomes 'established' through repeated citation, while the underlying evidence stays weak or contrary.",
+    example: "Greenberg (2009) analysed the citation network around a biomedical claim and showed how citation bias (ignoring contradicting papers), amplification (citing reviews instead of data) and invention (changing what sources said) created unfounded authority.",
+    why: "Authors cite what others cite and summaries of summaries. Each step drops caveats, so the citation count measures popularity, not support.",
+    antidote: "Trace key claims back to the primary data, read the cited paper rather than the citing sentence, and cite contradicting evidence as well as supporting.",
+    stages: ['design', 'interpretation'],
+    links: [],
+    also: ['matthew-effect', 'publication-bias', 'confirmation-bias'],
+    refs: [
+      { cite: "Greenberg, S. A. (2009). How citation distortions create unfounded authority: Analysis of a citation network. BMJ, 339, b2680.", doi: "10.1136/bmj.b2680" }
+    ]
+  },
+  {
+    id: 'matthew-effect',
+    name: 'Matthew Effect (Cumulative Advantage)',
+    kind: 'bias',
+    family: 'integrity',
+    trap: "Recognition flows to already-eminent scientists, so visibility tracks prior status as much as the merit of the work.",
+    example: "Merton (1968) documented, from interviews with Nobel laureates, how eminent scientists receive disproportionate credit for jointly authored or independently co-discovered work, while lesser-known contributors receive less.",
+    why: "Attention is scarce and readers use reputation as a filter, so early advantage compounds into citations, resources and further advantage.",
+    antidote: "Read the work rather than the name when building literature reviews and choosing exemplars, and recognise that citation counts partly reflect cumulative advantage.",
+    stages: ['interpretation'],
+    links: [],
+    also: ['citation-distortion', 'survivorship-bias'],
+    refs: [
+      { cite: "Merton, R. K. (1968). The Matthew effect in science. Science, 159(3810), 56–63.", doi: "10.1126/science.159.3810.56" }
+    ]
+  },
+  {
+    id: 'outcome-bias',
+    name: 'Outcome Bias',
+    kind: 'bias',
+    family: 'decision',
+    trap: "Judging the quality of a decision by how it turned out instead of by what was knowable when it was made.",
+    example: "Baron & Hershey (1988) gave participants identical descriptions of a medical decision. They rated the decision, and the decision-maker's competence, more highly when told the outcome was good than when told it was bad.",
+    why: "Outcomes are vivid and seem informative about the process, even when chance largely determined them.",
+    antidote: "When evaluating managerial decisions, strategies or research choices, assess the information and reasoning available at the time, and separate decision quality from outcome luck in study designs.",
+    stages: ['measurement', 'interpretation'],
+    links: [],
+    also: ['hindsight-bias', 'survivorship-bias', 'narrative-fallacy'],
+    refs: [
+      { cite: "Baron, J., & Hershey, J. C. (1988). Outcome bias in decision evaluation. Journal of Personality and Social Psychology, 54(4), 569–579.", doi: "10.1037/0022-3514.54.4.569" }
+    ]
+  },
+  {
+    id: 'pseudoreplication',
+    name: 'Pseudoreplication (Ignoring Nesting)',
+    kind: 'fallacy',
+    family: 'design',
+    trap: "Treating non-independent observations (employees in the same team, repeated measures of one person) as independent replicates.",
+    example: "Hurlbert (1984) defined pseudoreplication as testing treatment effects with an error term inappropriate to the hypothesis, for example treating many samples from one treated plot as independent replicates, and found it common in published ecological field experiments.",
+    why: "Observations within a cluster share influences, so the effective sample size is smaller than the count of observations. Standard errors shrink and false positives multiply.",
+    antidote: "Identify the unit at which the treatment or predictor varies. Analyse at that level or use multilevel models with clustered errors, and report ICCs and the number of clusters.",
+    stages: ['design', 'analysis'],
+    links: [
+      { tool: 'toolsscope', label: 'Account for nesting in ToolsScope', arg: 'Fit a multilevel model with employees nested in teams and report the ICC' }
+    ],
+    also: ['atomistic-fallacy', 'ecological-fallacy'],
+    refs: [
+      { cite: "Hurlbert, S. H. (1984). Pseudoreplication and the design of ecological field experiments. Ecological Monographs, 54(2), 187–211.", doi: "10.2307/1942661" }
+    ]
   }
 ];
 
